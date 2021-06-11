@@ -14,5 +14,19 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('site.principal',['titulo' => 'Bem-vindo ao grupo!']);
+})->name('principal');
+
+Route::fallback(function(){
+    return 'Desculpe, página não encontrada.';
 });
+
+Route::resource('project', 'ProjectController')->middleware('auth');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+
+
+
