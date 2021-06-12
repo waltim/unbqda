@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
@@ -15,7 +16,7 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         $projects = Project::paginate(10);
-        return view('app.project.index',['titulo' => 'Projects list','projects' => $projects, 'request' => $request->all()]);
+        return view('app.project.index', ['titulo' => 'Projects list', 'projects' => $projects, 'request' => $request->all()]);
     }
 
     /**
@@ -36,7 +37,15 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|min:3',
+            'description' => 'required|max:2000',
+            'user_id' => 'exists:users,id'
+        ]);
+        Project::unguard();
+        Project::create($request->except('_token'));
+        Project::reguard();
+        return redirect()->route('project.index');
     }
 
     /**

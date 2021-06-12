@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
-    use SoftDeletes;
     protected $table = 'projects';
-    protected $fillable = ['name, description, user_id'];
+    protected $fillable = ['user_id, name, description'];
+    use SoftDeletes;
 }
