@@ -63,15 +63,23 @@
                         <input type="hidden" name="user_id" value="{{ auth()->id() }}">
                         <div class="form-group">
                             <label style="font-size: 18px;" for="exampleFormControlInput1">Project name</label>
-                            <input type="text" name="name" value="{{ old('name') ??  '' }}" class="form-control" id="exampleFormControlInput1"
-                                placeholder="The name of your project">
-                            {{ $errors->has('name') ? $errors->first('name') : '' }}
+                            <input type="text" name="name" value="{{ old('name') ?? '' }}" class="form-control"
+                                id="exampleFormControlInput1" placeholder="The name of your project">
+                            @if ($errors->has('name'))
+                                <div class="alert alert-danger" role="alert">
+                                    {{ $errors->first('name') }}
+                                </div>
+                            @endif
                         </div>
                         <div class="form-group">
                             <label style="font-size: 18px;" for="exampleFormControlTextarea1">Description</label>
                             <textarea class="form-control" name="description" placeholder="The main goal is....."
-                                id="exampleFormControlTextarea1" rows="5">{{ old('description') ??  '' }}</textarea>
-                            {{ $errors->has('description') ? $errors->first('description') : '' }}
+                                id="exampleFormControlTextarea1" rows="5">{{ old('description') ?? '' }}</textarea>
+                            @if ($errors->has('description'))
+                                <div class="alert alert-danger" role="alert">
+                                    {{ $errors->first('description') }}
+                                </div>
+                            @endif
                         </div>
                         <div class="form-group col-md-12 text-center">
                             <input type="submit" class="btn btn-success col-md-4" value="Register">
@@ -103,6 +111,7 @@
             $(document).ready(function() {
                 $("#myModal").modal('show');
             });
+
         </script>
     @endif
 
