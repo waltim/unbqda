@@ -10,10 +10,6 @@
         </div>
 
         <div class="text-right" style="padding-right: 5%">
-            {{-- <ul>
-                <li><a href="" data-toggle="modal" class="btn btn-outline-primary" data-target=".bd-example-modal-lg">New project</a></li>
-                <li><a href="{{ route('project.index') }}" class="btn btn-outline-primary">List</a></li>
-            </ul> --}}
             <div class="btn-group" role="group" aria-label="Basic example">
                 <button type="button" data-toggle="modal" class="btn btn-outline-primary" data-target=".bd-example-modal-lg" class="btn btn-outline-primary">New Project</button>
               </div>
@@ -155,8 +151,6 @@
                 })
             }
         }
-
-
 
         function editProject(id) {
             var key = parseInt(id);
