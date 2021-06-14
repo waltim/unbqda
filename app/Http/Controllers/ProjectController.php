@@ -15,7 +15,7 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-        $projects = Project::paginate(10);
+        $projects = Project::orderBy('id', 'DESC')->paginate(5);
         return view('app.project.index', ['titulo' => 'Projects list', 'projects' => $projects, 'request' => $request->all()]);
     }
 
@@ -43,9 +43,10 @@ class ProjectController extends Controller
             'user_id' => 'exists:users,id'
         ]);
         Project::unguard();
-        Project::create($request->except('_token'));
+        $project =  Project::create($request->except('_token'));
         Project::reguard();
-        return redirect()->route('project.index');
+        // return redirect()->route('project.index');
+        return response()->json($project);
     }
 
     /**

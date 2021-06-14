@@ -31,12 +31,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($projects as $key => $project)
+                    @foreach ($projects as $project)
                         <tr>
-                            <th scope="row">{{ $key + 1 }}</th>
+                            <th scope="row">{{ $project->id }}</th>
                             <td>{{ $project->name }}</td>
                             <td>{{ $project->description }}</td>
-                            <td>{{ $project->user_id }}</td>
+                            <td>{{ $project->user->name }}</td>
                             <td></td>
                             <td></td>
                             <td></td>
@@ -58,7 +58,8 @@
                     <div style="text-align: center; margin-top: 3%;">
                         <h3>Project registration</h3>
                     </div>
-                    <form method="post" action="{{ route('project.store') }}">
+                    {{-- <form id="projectForm" method="post" action="{{ route('project.store') }}"> --}}
+                    <form id="projectForm">
                         @csrf
                         <input type="hidden" name="user_id" value="{{ auth()->id() }}">
                         <div class="form-group">
@@ -91,7 +92,6 @@
     </div>
 
 
-
     <!-- Small modal -->
     {{-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-sm">Small
         modal</button>
@@ -104,15 +104,52 @@
             </div>
         </div>
     </div> --}}
-    @component('app.layouts._partials.js-import')
-    @endcomponent
-    @if (sizeof($errors->all()) > 0)
+
+    {{-- @if (sizeof($errors->all()) > 0)
         <script>
             $(document).ready(function() {
                 $("#myModal").modal('show');
             });
 
         </script>
-    @endif
+    @endif --}}
+
+    @component('app.layouts._partials.js-import')
+    @endcomponent
+
+
+    <script>
+        $('#projectForm').submit(function(e) {
+            e.preventDefault();
+            var user_id = $("input[name=user_id]").val();
+            var name = $("input[name=name]").val();
+            var description = $("textarea[name=description]").val();
+            var _token = $("input[name=_token]").val();
+
+            $.ajax({
+                url: "{{ route('project.store') }}",
+                type: "POST",
+                data: {
+                    user_id: user_id,
+                    name: name,
+                    description: description,
+                    _token: _token
+                },
+                success: function(response) {
+                    // console.log(response);
+                    location.reload();
+                    alert("Project created with success!");
+                },
+                error: function(data) {
+                    var errors = data.responseText;
+                    var jsonResponse = JSON.parse(errors);
+                    $.each(jsonResponse.errors, function(key, value) {
+                        alert(key + ": " + value);
+                    });
+                }
+            })
+        })
+
+    </script>
 
 @endsection
