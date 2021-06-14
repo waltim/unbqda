@@ -10,4 +10,14 @@ class Agreement extends Model
     use SoftDeletes;
     protected $table = 'agreements';
     protected $fillable = ['scale, code_id, user_id'];
+
+    public function code()
+    {
+        return $this->belongsTo('App\Code');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
 }
