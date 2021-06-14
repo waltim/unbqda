@@ -68,7 +68,7 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
-        //
+        return response()->json($project);
     }
 
     /**
@@ -78,11 +78,14 @@ class ProjectController extends Controller
      * @param  \App\Project  $project
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Project $project)
+    public function update(Request $request)
     {
-        //
+        Project::unguard();
+        $project = Project::find($request->id);
+        $project->update($request->except(['_token','_method','user_id']));
+        Project::reguard();
+        return response()->json($project);
     }
-
     /**
      * Remove the specified resource from storage.
      *
@@ -91,6 +94,7 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
-        //
+        $project->delete();
+        return response()->json($project);
     }
 }

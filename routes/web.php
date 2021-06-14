@@ -22,6 +22,7 @@ Route::fallback(function(){
 });
 
 Route::resource('project', 'ProjectController')->middleware('auth');
+Route::put('/project', 'ProjectController@update')->name('project.update');
 
 Auth::routes();
 
