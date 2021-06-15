@@ -157,6 +157,7 @@
             var id = $("#interviewId").val();
             var name = $("#name").val();
             var description = $("#description").val();
+            description = description.replace(/¶/g, '');
             var _token = $("input[name=_token]").val();
             var _method = $("input[name=_method]").val();
             console.log(id, name, description, _token, _method);
@@ -166,7 +167,7 @@
                 data: {
                     id: id,
                     name: name,
-                    description: description,
+                    description: description.replace(/¶/g,''),
                     _token: _token,
                     _method: _method
                 },
@@ -191,6 +192,7 @@
             var project_id = $("input[name=project_id]").val();
             var name = $("input[name=name]").val();
             var description = $("textarea[name=description]").val();
+            description = description.replace(/¶/g, '');
             var _token = $("input[name=_token]").val();
 
             $.ajax({

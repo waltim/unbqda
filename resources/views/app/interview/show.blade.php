@@ -61,7 +61,8 @@
                 </form>
             </div>
             <div class="col-md-8 ex1">
-                <p id="interview-text" style="color: black!important; white-space: pre-wrap; text-align: justify;">
+                <p id="interview-text"
+                    style="color: black!important; white-space: pre-wrap; text-align: justify; font-size: 18px">
                     {{ $interview->description }}
                 </p>
             </div>
@@ -166,6 +167,10 @@
     @endcomponent
 
     <script>
+        $(window).bind("load", function() {
+            highlightText({{ $interview->id }});
+        });
+
         function deleteCode(id) {
 
             if (confirm("Do you really want to delete this code?")) {
@@ -183,17 +188,16 @@
             }
         }
 
-
         function remove_tags(html) {
             html = html.replace(/<br>/g, "$br$");
             html = html.replace(/(?:\r\n|\r|\n)/g, '$n$');
             var tmp = document.createElement("DIV");
             tmp.innerHTML = html;
             html = tmp.textContent || tmp.innerText;
-            console.log(html);
             html = html.replace(/\$br\$/g, "<br>");
             html = html.replace(/\$n\$/g, "<br>");
-            console.log(html);
+            html = html.replace(/¶/g, '');
+            html = html.replace(/\u00B6/g, '')
             return html;
         }
 
@@ -203,16 +207,14 @@
                 var mydiv = document.getElementById("interview-text");
                 var str = mydiv.innerHTML;
                 mydiv.innerHTML = remove_tags(str);
-                // interview = removeTags(interview);
-                // document.getElementById('interview-text').innerText = interview;
                 $.each(quotes, function(key, value) {
                     var searchword = value.description;
-                    var custfilter = new RegExp(searchword, "ig");
+                    searchword = searchword.replace(/¶/g, '');
                     var repstr = "<span style='background:white;padding:1px;border:" + value.color +
                         " solid 2px;font-weight: bold;'>" + searchword + "</span>";
                     if (searchword != "") {
                         $('#interview-text').each(function() {
-                            $(this).html($(this).html().replace(custfilter, repstr));
+                            $(this).html($(this).html().replace(searchword, repstr));
                         })
                     }
                 });
@@ -272,6 +274,7 @@
             var color = $("input[name=code_color]").val();
             var memo = $("textarea[name=code_memo]").val();
             var quote = $("textarea[name=code_quote]").val();
+            quote = quote.replace(/¶/g, '');
             var _token = $("input[name=_token]").val();
             console.log(interview_id, name, color, memo, _token, quote);
             $.ajax({
