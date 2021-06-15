@@ -30,7 +30,7 @@
         </div>
         <div class="localizacao">
             <h2>Localização</h2>
-            <img src="img/mapa.png">
+            <img src="{{ asset('img/mapa.png') }}">
         </div>
     </div>
 </body>

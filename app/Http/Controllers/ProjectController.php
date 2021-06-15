@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Interview;
 use App\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -45,7 +46,6 @@ class ProjectController extends Controller
         Project::unguard();
         $project =  Project::create($request->except('_token'));
         Project::reguard();
-        // return redirect()->route('project.index');
         return response()->json($project);
     }
 
@@ -57,7 +57,14 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        //
+        $interviews = Interview::where('project_id','=',$project->id);
+        $interviews = $interviews->orderBy('id','DESC')->paginate(5);
+        // dd($interviews);
+        return view('app.project.show', [
+            'titulo' => $project->name,
+            'project' => $project,
+            'interviews' => $interviews,
+        ]);
     }
 
     /**
@@ -80,9 +87,15 @@ class ProjectController extends Controller
      */
     public function update(Request $request)
     {
+
+        $request->validate([
+            'name' => 'required|min:3',
+            'description' => 'required',
+        ]);
+
         Project::unguard();
         $project = Project::find($request->id);
-        $project->update($request->except(['_token','_method','user_id']));
+        $project->update($request->except(['_token', '_method', 'user_id']));
         Project::reguard();
         return response()->json($project);
     }

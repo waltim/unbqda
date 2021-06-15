@@ -23,6 +23,8 @@ Route::fallback(function(){
 
 Route::resource('project', 'ProjectController')->middleware('auth');
 Route::put('/project', 'ProjectController@update')->name('project.update');
+Route::resource('interview', 'InterviewController')->middleware('auth');
+Route::put('/interview', 'InterviewController@update')->name('interview.update');
 
 Auth::routes();
 

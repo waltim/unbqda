@@ -18,17 +18,6 @@ class Category extends Model
         return $this->hasMany(Category::class, 'category_id', 'id');
     }
 
-    public function isFather()
-    {
-        return is_null($this->attributes['category_id']);
-    }
-
-    protected $appends = ['is_father'];
-    public function getIsFatherAttribute()
-    {
-        return is_null($this->attributes['category_id']);
-    }
-
     public function code_categories()
     {
         return $this->hasMany('App\CodeCategory');

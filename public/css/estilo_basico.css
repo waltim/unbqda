@@ -220,3 +220,26 @@ html, body {
             .menu-2 a:hover {
                 color: #268fd0;
             }
+
+            h1.\.sub-titulos {
+                color: black;
+            }
+
+            .child-sections {
+                padding: 5%;
+            }
+
+            .highlight{
+                background:#00FF00;
+                padding:1px;
+                border:#00CC00 dotted 1px;
+              }
+
+              .unselectable {
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }

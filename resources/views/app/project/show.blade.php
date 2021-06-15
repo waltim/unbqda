@@ -6,47 +6,55 @@
 
     <div class="conteudo-pagina">
         <div class="titulo-pagina">
-            <h1>Product List</h1>
+            <h1>Project Details</h1>
         </div>
 
         <div class="text-right" style="padding-right: 5%">
             <div class="btn-group" role="group" aria-label="Basic example">
-                <button type="button" data-toggle="modal" class="btn btn-outline-primary" data-target=".bd-example-modal-lg" class="btn btn-outline-primary">New Project</button>
-              </div>
+                <button type="button" onclick="location.href = '{{ route('project.index') }}';" class="btn btn-outline-primary">List Projects</button>
+                <button type="button" data-toggle="modal" class="btn btn-outline-primary" data-target=".bd-example-modal-lg">New Interview</button>
+            </div>
         </div>
     </div>
     <div class="informacao-pagina">
-        <div id="reload-table" style="width: 90%; margin-left: auto; margin-right: auto;">
+        <div class="media">
+            <div class="media-body">
+                <h5 class="mt-0">{{ $project->name }}</h5>
+                {{ $project->description }}
+            </div>
+        </div>
+        <div class="child-sections">
+            <h1 class=".sub-titulos">Project Interviews</h1>
+        </div>
+        <div id="interviews-table" style="width: 90%; margin-left: auto; margin-right: auto;">
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Name</th>
                         <th scope="col">Description</th>
-                        <th scope="col">Owner</th>
                         <th scope="col">View</th>
                         <th scope="col">Edit</th>
                         <th scope="col">Delete</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($projects as $project)
-                        <tr id="sid{{ $project->id }}">
-                            <td scope="row">{{ $project->id }}</td>
-                            <td>{{ $project->name }}</td>
-                            <td>{{ \Illuminate\Support\Str::limit($project->description, 50, $end='...') }}</td>
-                            <td>{{ $project->user->name }}</td>
-                            <td><a class="btn btn-light" href="{{ route('project.show',['project' => $project->id]) }}">Details</a></td>
-                            <td><a href="javascript:void(0)" id="editProject" class="btn btn-info"
-                                    onclick="editProject({{ $project->id }})">Edit Project</a></td>
-                            <td><a href="javascript:void(0)" onclick="deleteProject({{ $project->id }})"
+                    @foreach ($interviews as $key => $interview)
+                        <tr id="sid{{ $interview->id }}">
+                            <td scope="row">{{ $key }}</td>
+                            <td>{{ $interview->name }}</td>
+                            <td>{{ \Illuminate\Support\Str::limit($interview->description, 50, $end='...') }}</td>
+                            <td><a class="btn btn-light" href="{{ route('interview.show',['interview' => $interview->id]) }}">Details</a></td>
+                            <td><a href="javascript:void(0)" id="editInterview" class="btn btn-info"
+                                    onclick="editInterview({{ $interview->id }})">Edit Interview</a></td>
+                            <td><a href="javascript:void(0)" onclick="deleteInterview({{ $interview->id }})"
                                     class="btn btn-danger">Delete</a></td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
-            {{ $projects->appends($request)->links() }}
-            {{ $projects->total() > 0 ? $projects->total() . ' - registro(s) encontrado(s).' : 'nenhum registro encontrado.' }}
+            {{ $interviews->withQueryString()->links() }}
+            {{ $interviews->total() > 0 ? $interviews->total() . ' - registro(s) encontrado(s).' : 'nenhum registro encontrado.' }}
         </div>
     </div>
 
@@ -57,30 +65,20 @@
             <div class="modal-content">
                 <div style="width: 95%; margin: auto;">
                     <div id="modal-action" style="text-align: center; margin-top: 3%;">
-                        <h3>Project registration</h3>
+                        <h3>Interview registration</h3>
                     </div>
-                    <form id="projectForm">
+                    <form id="interviewForm">
                         @csrf
-                        <input type="hidden" id="user_id" name="user_id" value="{{ auth()->id() }}">
+                        <input type="hidden" id="project_id" name="project_id" value="{{ $project->id }}">
                         <div class="form-group">
-                            <label style="font-size: 18px;" for="exampleFormControlInput1">Project name</label>
-                            <input type="text" id="new_name" name="name" value="{{ old('name') ?? '' }}"
+                            <label style="font-size: 18px;" for="exampleFormControlInput1">Interview name</label>
+                            <input type="text" id="interview_name" name="name" value="{{ old('name') ?? '' }}"
                                 class="form-control" placeholder="The name of your project">
-                            @if ($errors->has('name'))
-                                <div class="alert alert-danger" role="alert">
-                                    {{ $errors->first('name') }}
-                                </div>
-                            @endif
                         </div>
                         <div class="form-group">
-                            <label style="font-size: 18px;" for="exampleFormControlTextarea1">Description</label>
-                            <textarea class="form-control" id="new_description" name="description"
-                                placeholder="The main goal is....." rows="5">{{ old('description') ?? '' }}</textarea>
-                            @if ($errors->has('description'))
-                                <div class="alert alert-danger" role="alert">
-                                    {{ $errors->first('description') }}
-                                </div>
-                            @endif
+                            <label style="font-size: 18px;" for="exampleFormControlTextarea1">The text of the interview</label>
+                            <textarea class="form-control" id="interview_description" name="description"
+                                placeholder="Research: Can you prefer....." rows="5">{{ old('description') ?? '' }}</textarea>
                         </div>
                         <div class="form-group col-md-12 text-center">
                             <input type="submit" class="btn btn-success col-md-4" value="Register">
@@ -92,7 +90,7 @@
     </div>
 
 
-    <div id="editForm" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog"
+    <div id="editInterviewForm" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog"
         aria-labelledby="myLargeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -100,28 +98,18 @@
                     <div id="modal-action" style="text-align: center; margin-top: 3%;">
                         <h3>Edit project</h3>
                     </div>
-                    <form id="projectEditForm">
+                    <form id="interviewEditForm">
                         @csrf
                         @method('PUT')
                         <div class="form-group">
-                            <label style="font-size: 18px;" for="exampleFormControlInput1">Project name</label>
+                            <label style="font-size: 18px;" for="exampleFormControlInput1">Interview name</label>
                             <input type="text" name="name" value="{{ old('name') ?? '' }}" class="form-control" id="name"
                                 placeholder="The name of your project">
-                            @if ($errors->has('name'))
-                                <div class="alert alert-danger" role="alert">
-                                    {{ $errors->first('name') }}
-                                </div>
-                            @endif
                         </div>
                         <div class="form-group">
-                            <label style="font-size: 18px;" for="exampleFormControlTextarea1">Description</label>
+                            <label style="font-size: 18px;" for="exampleFormControlTextarea1">Text of the interview</label>
                             <textarea class="form-control" name="description" placeholder="The main goal is....."
                                 id="description" rows="5">{{ old('description') ?? '' }}</textarea>
-                            @if ($errors->has('description'))
-                                <div class="alert alert-danger" role="alert">
-                                    {{ $errors->first('description') }}
-                                </div>
-                            @endif
                         </div>
                         <div class="form-group col-md-12 text-center">
                             <input type="submit" class="btn btn-success col-md-4" value="Update">
@@ -136,44 +124,44 @@
     @endcomponent
 
     <script>
-        function deleteProject(id) {
+        function deleteInterview(id) {
 
-            if (confirm("Do you really want to delete this project?")) {
+            if (confirm("Do you really want to delete this interview?")) {
                 $.ajax({
-                    url: '/project/' + id,
+                    url: '/interview/' + id,
                     type: 'DELETE',
                     data: {
                         _token: $("input[name=_token]").val()
                     },
                     success: function(response) {
-                        $('#reload-table').load(document.URL + ' #reload-table');
+                        $('#interviews-table').load(document.URL + ' #interviews-table');
                     }
                 })
             }
         }
 
-        function editProject(id) {
+        function editInterview(id) {
             var key = parseInt(id);
-            $.get('/project/' + key + '/edit', function(project) {
-                document.getElementById("name").value = project.name;
-                document.getElementById("description").value = project.description;
-                $("#projectId").remove();
-                var new_input = "<input type='hidden' id='projectId' name='id' value='" + id + "'>";
-                $('#projectEditForm').append(new_input);
-                $("#editForm").modal("toggle");
+            $.get('/interview/' + key + '/edit', function(interview) {
+                document.getElementById("name").value = interview.name;
+                document.getElementById("description").value = interview.description;
+                $("#interviewId").remove();
+                var new_input = "<input type='hidden' id='interviewId' name='id' value='" + id + "'>";
+                $('#interviewEditForm').append(new_input);
+                $("#editInterviewForm").modal("toggle");
             });
         }
 
-        $('#projectEditForm').submit(function(e) {
+        $('#interviewEditForm').submit(function(e) {
             e.preventDefault();
-            var id = $("#projectId").val();
+            var id = $("#interviewId").val();
             var name = $("#name").val();
             var description = $("#description").val();
             var _token = $("input[name=_token]").val();
             var _method = $("input[name=_method]").val();
             console.log(id, name, description, _token, _method);
             $.ajax({
-                url: "{{ route('project.update') }}",
+                url: "{{ route('interview.update') }}",
                 type: "POST",
                 data: {
                     id: id,
@@ -183,9 +171,9 @@
                     _method: _method
                 },
                 success: function(response) {
-                    $("#editForm").modal("toggle");
-                    $('#projectEditForm')[0].reset();
-                    $('#reload-table').load(document.URL + ' #reload-table');
+                    $("#editInterviewForm").modal("toggle");
+                    $('#interviewEditForm')[0].reset();
+                    $('#interviews-table').load(document.URL + ' #interviews-table');
                 },
                 error: function(data) {
                     var errors = data.responseText;
@@ -198,32 +186,32 @@
         })
 
 
-        $('#projectForm').submit(function(e) {
+        $('#interviewForm').submit(function(e) {
             e.preventDefault();
-            var user_id = $("input[name=user_id]").val();
+            var project_id = $("input[name=project_id]").val();
             var name = $("input[name=name]").val();
             var description = $("textarea[name=description]").val();
             var _token = $("input[name=_token]").val();
 
             $.ajax({
-                url: "{{ route('project.store') }}",
+                url: "{{ route('interview.store') }}",
                 type: "POST",
                 data: {
-                    user_id: user_id,
+                    project_id: project_id,
                     name: name,
                     description: description,
                     _token: _token
                 },
                 success: function(response) {
                     $("#myModal").modal("toggle");
-                    $('#projectForm')[0].reset();
-                    $('#reload-table').load(document.URL + ' #reload-table');
+                    $('#interviewForm')[0].reset();
+                    $('#interviews-table').load(document.URL + ' #interviews-table');
                 },
                 error: function(data) {
                     var errors = data.responseText;
                     var jsonResponse = JSON.parse(errors);
                     $.each(jsonResponse.errors, function(key, value) {
-                        $('#new_' + key).after("<div class='alert alert-danger' id='alert_" +
+                        $('#interview_' + key).after("<div class='alert alert-danger' id='alert_" +
                             key + "' role='alert'>" + value + "</div>");
                         setTimeout(function() {
                             $('#alert_' + key).remove();
