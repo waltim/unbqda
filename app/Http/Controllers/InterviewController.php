@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Code;
 use App\Interview;
+use App\Quote;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InterviewController extends Controller
 {
@@ -54,9 +57,19 @@ class InterviewController extends Controller
      */
     public function show(Interview $interview)
     {
+        // $codes = Quote::orderBy('id','DESC')->where('interview_id', $interview->id)->paginate(5);
+
+        $codes = Code::join('quotes', 'codes.quote_id', '=', 'quotes.id')
+        ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
+        ->where('quotes.interview_id', '=', $interview->id)
+        ->select('codes.*')
+        ->orderBy('codes.id','DESC')
+        ->paginate(5);
+
         return view('app.interview.show', [
             'titulo' => $interview->name,
-            'interview' => $interview
+            'interview' => $interview,
+            'codes' => $codes
         ]);
     }
 
