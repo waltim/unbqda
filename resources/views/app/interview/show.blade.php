@@ -15,13 +15,14 @@
                     onclick="location.href = '{{ route('project.show', ['project' => $interview->project_id]) }}';"
                     class="btn btn-outline-primary">List Interviews</button>
 
-                <button type="button" onclick="highlightText({{ $interview->id }});"
+                {{-- <button type="button" onclick="highlightText({{ $interview->id }});"
                     class="btn btn-outline-primary">Refresh
-                    quotes</button>
+                    quotes</button> --}}
 
             </div>
         </div>
     </div>
+
     <div style="margin: 0 auto;height: 60px;width: 95%;">
         <input id="showSelected" style="width: 15%;" class="btn btn-dark float-right" type="button" value="Get quote" />
     </div>
@@ -210,8 +211,8 @@
                 $.each(quotes, function(key, value) {
                     var searchword = value.description;
                     searchword = searchword.replace(/¶/g, '');
-                    var repstr = "<span style='background:white;padding:1px;border:" + value.color +
-                        " solid 2px;font-weight: bold;'>" + searchword + "</span>";
+                    var repstr = "<span title=' Code: " + value.code_name + " - " + value.name + "' style='background:white;padding:1px;border:" + value.color +
+                        " solid 1px;border-left: 15px solid " + value.color + ";font-weight: bold;'>" + searchword + "</span>";
                     if (searchword != "") {
                         $('#interview-text').each(function() {
                             $(this).html($(this).html().replace(searchword, repstr));

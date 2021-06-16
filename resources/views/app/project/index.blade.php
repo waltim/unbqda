@@ -11,8 +11,9 @@
 
         <div class="text-right" style="padding-right: 5%">
             <div class="btn-group" role="group" aria-label="Basic example">
-                <button type="button" data-toggle="modal" class="btn btn-outline-primary" data-target=".bd-example-modal-lg" class="btn btn-outline-primary">New Project</button>
-              </div>
+                <button type="button" data-toggle="modal" class="btn btn-outline-primary" data-target=".bd-example-modal-lg"
+                    class="btn btn-outline-primary">New Project</button>
+            </div>
         </div>
     </div>
     <div class="informacao-pagina">
@@ -34,13 +35,21 @@
                         <tr id="sid{{ $project->id }}">
                             <td scope="row">{{ $project->id }}</td>
                             <td>{{ $project->name }}</td>
-                            <td>{{ \Illuminate\Support\Str::limit($project->description, 50, $end='...') }}</td>
+                            <td>{{ \Illuminate\Support\Str::limit($project->description, 50, $end = '...') }}</td>
                             <td>{{ $project->user->name }}</td>
-                            <td><a class="btn btn-light" href="{{ route('project.show',['project' => $project->id]) }}">Details</a></td>
-                            <td><a href="javascript:void(0)" id="editProject" class="btn btn-info"
-                                    onclick="editProject({{ $project->id }})">Edit Project</a></td>
-                            <td><a href="javascript:void(0)" onclick="deleteProject({{ $project->id }})"
-                                    class="btn btn-danger">Delete</a></td>
+                            @if (auth()->id() == $project->user->id)
+                                <td><a class="btn btn-light"
+                                        href="{{ route('project.show', ['project' => $project->id]) }}">Details</a></td>
+                                <td><a href="javascript:void(0)" id="editProject" class="btn btn-info"
+                                        onclick="editProject({{ $project->id }})">Edit Project</a></td>
+                                <td><a href="javascript:void(0)" onclick="deleteProject({{ $project->id }})"
+                                        class="btn btn-danger">Delete</a></td>
+                            @else
+                                <td><a class="btn btn-light"
+                                        href="{{ route('project.show', ['project' => $project->id]) }}">Details</a></td>
+                                <td></td>
+                                <td></td>
+                            @endif
                         </tr>
                     @endforeach
                 </tbody>

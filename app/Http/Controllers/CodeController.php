@@ -92,8 +92,9 @@ class CodeController extends Controller
     public function highlight(Interview $interview){
         $quotes = Code::join('quotes', 'codes.quote_id', '=', 'quotes.id')
         ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
+        ->join('users', 'codes.user_id', '=', 'users.id')
         ->where('quotes.interview_id', '=', $interview->id)
-        ->select('quotes.*','codes.color')
+        ->select('quotes.*','codes.color', 'codes.description AS code_name','users.name')
         ->get();
         return response()->json($quotes);
     }

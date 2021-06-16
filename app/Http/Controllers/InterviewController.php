@@ -62,6 +62,7 @@ class InterviewController extends Controller
         $codes = Code::join('quotes', 'codes.quote_id', '=', 'quotes.id')
         ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
         ->where('quotes.interview_id', '=', $interview->id)
+        ->where('codes.user_id', '=', auth()->id())
         ->select('codes.*')
         ->orderBy('codes.id','DESC')
         ->paginate(5);

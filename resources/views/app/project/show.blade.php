@@ -11,8 +11,10 @@
 
         <div class="text-right" style="padding-right: 5%">
             <div class="btn-group" role="group" aria-label="Basic example">
-                <button type="button" onclick="location.href = '{{ route('project.index') }}';" class="btn btn-outline-primary">List Projects</button>
-                <button type="button" data-toggle="modal" class="btn btn-outline-primary" data-target=".bd-example-modal-lg">New Interview</button>
+                <button type="button" onclick="location.href = '{{ route('project.index') }}';"
+                    class="btn btn-outline-primary">List Projects</button>
+                <button type="button" data-toggle="modal" class="btn btn-outline-primary"
+                    data-target=".bd-example-modal-lg">New Interview</button>
             </div>
         </div>
     </div>
@@ -43,12 +45,22 @@
                         <tr id="sid{{ $interview->id }}">
                             <td scope="row">{{ $key }}</td>
                             <td>{{ $interview->name }}</td>
-                            <td>{{ \Illuminate\Support\Str::limit($interview->description, 50, $end='...') }}</td>
-                            <td><a class="btn btn-light" href="{{ route('interview.show',['interview' => $interview->id]) }}">Details</a></td>
-                            <td><a href="javascript:void(0)" id="editInterview" class="btn btn-info"
-                                    onclick="editInterview({{ $interview->id }})">Edit Interview</a></td>
-                            <td><a href="javascript:void(0)" onclick="deleteInterview({{ $interview->id }})"
-                                    class="btn btn-danger">Delete</a></td>
+                            <td>{{ \Illuminate\Support\Str::limit($interview->description, 50, $end = '...') }}</td>
+                            @if (auth()->id() == $interview->project->user_id)
+                                <td><a class="btn btn-light"
+                                        href="{{ route('interview.show', ['interview' => $interview->id]) }}">Details</a>
+                                </td>
+                                <td><a href="javascript:void(0)" id="editInterview" class="btn btn-info"
+                                        onclick="editInterview({{ $interview->id }})">Edit Interview</a></td>
+                                <td><a href="javascript:void(0)" onclick="deleteInterview({{ $interview->id }})"
+                                        class="btn btn-danger">Delete</a></td>
+                            @else
+                                <td><a class="btn btn-warning"
+                                        href="{{ route('interview.show', ['interview' => $interview->id]) }}">Start Coding</a>
+                                </td>
+                                <td></td>
+                                <td></td>
+                            @endif
                         </tr>
                     @endforeach
                 </tbody>
@@ -76,9 +88,11 @@
                                 class="form-control" placeholder="The name of your project">
                         </div>
                         <div class="form-group">
-                            <label style="font-size: 18px;" for="exampleFormControlTextarea1">The text of the interview</label>
+                            <label style="font-size: 18px;" for="exampleFormControlTextarea1">The text of the
+                                interview</label>
                             <textarea class="form-control" id="interview_description" name="description"
-                                placeholder="Research: Can you prefer....." rows="5">{{ old('description') ?? '' }}</textarea>
+                                placeholder="Research: Can you prefer....."
+                                rows="5">{{ old('description') ?? '' }}</textarea>
                         </div>
                         <div class="form-group col-md-12 text-center">
                             <input type="submit" class="btn btn-success col-md-4" value="Register">
@@ -167,7 +181,7 @@
                 data: {
                     id: id,
                     name: name,
-                    description: description.replace(/¶/g,''),
+                    description: description.replace(/¶/g, ''),
                     _token: _token,
                     _method: _method
                 },
@@ -213,7 +227,8 @@
                     var errors = data.responseText;
                     var jsonResponse = JSON.parse(errors);
                     $.each(jsonResponse.errors, function(key, value) {
-                        $('#interview_' + key).after("<div class='alert alert-danger' id='alert_" +
+                        $('#interview_' + key).after(
+                            "<div class='alert alert-danger' id='alert_" +
                             key + "' role='alert'>" + value + "</div>");
                         setTimeout(function() {
                             $('#alert_' + key).remove();
