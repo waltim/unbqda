@@ -57,8 +57,6 @@ class InterviewController extends Controller
      */
     public function show(Interview $interview)
     {
-        // $codes = Quote::orderBy('id','DESC')->where('interview_id', $interview->id)->paginate(5);
-
         $codes = Code::join('quotes', 'codes.quote_id', '=', 'quotes.id')
         ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
         ->where('quotes.interview_id', '=', $interview->id)
@@ -68,6 +66,22 @@ class InterviewController extends Controller
         ->paginate(5);
 
         return view('app.interview.show', [
+            'titulo' => $interview->name,
+            'interview' => $interview,
+            'codes' => $codes
+        ]);
+    }
+
+    public function analise(Interview $interview){
+
+        $codes = Code::join('quotes', 'codes.quote_id', '=', 'quotes.id')
+        ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
+        ->where('quotes.interview_id', '=', $interview->id)
+        ->select('codes.*')
+        ->orderBy('codes.id','DESC')
+        ->paginate(10);
+
+        return view('app.interview.analise', [
             'titulo' => $interview->name,
             'interview' => $interview,
             'codes' => $codes

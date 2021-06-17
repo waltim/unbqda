@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Agreement;
+use App\Category;
 use App\Code;
 use App\Interview;
 use App\Quote;
@@ -16,7 +18,7 @@ class CodeController extends Controller
      */
     public function index()
     {
-        //
+
     }
 
     /**
@@ -99,6 +101,30 @@ class CodeController extends Controller
         return response()->json($quotes);
     }
 
+    public function analise(Request $request){
+
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'code_id' => 'required|exists:codes,id',
+            'scale' => 'required'
+        ]);
+
+        Agreement::unguard();
+        $agree = new Agreement();
+        $agree->user_id = $request->get('user_id');
+        $agree->code_id = $request->get('code_id');
+        $agree->scale = $request->get('scale');
+        $agree->save();
+        Agreement::reguard();
+
+        return response()->json($agree);
+    }
+
+    public function analise_delete(Agreement $agreement){
+        $agreement->delete();
+        return response()->json($agreement);
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -119,6 +145,8 @@ class CodeController extends Controller
      */
     public function destroy(Code $code)
     {
+        $code->code_categories()->delete();
+        $code->agreements()->delete();
         if($code->delete()){
             $quote = Quote::find($code->quote_id);
             $quote->delete();

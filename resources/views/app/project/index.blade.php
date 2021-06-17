@@ -6,7 +6,7 @@
 
     <div class="conteudo-pagina">
         <div class="titulo-pagina">
-            <h1>Product List</h1>
+            <h1>{{ $titulo }}</h1>
         </div>
 
         <div class="text-right" style="padding-right: 5%">
@@ -25,7 +25,7 @@
                         <th scope="col">Name</th>
                         <th scope="col">Description</th>
                         <th scope="col">Owner</th>
-                        <th scope="col">View</th>
+                        <th scope="col">Actions</th>
                         <th scope="col">Edit</th>
                         <th scope="col">Delete</th>
                     </tr>
@@ -38,15 +38,29 @@
                             <td>{{ \Illuminate\Support\Str::limit($project->description, 50, $end = '...') }}</td>
                             <td>{{ $project->user->name }}</td>
                             @if (auth()->id() == $project->user->id)
-                                <td><a class="btn btn-light"
-                                        href="{{ route('project.show', ['project' => $project->id]) }}">Details</a></td>
+                                <td class="btn-group" role="group" aria-label="Basic example"
+                                    style="padding-top: 0px!important">
+                                    <button type="button"
+                                        onclick="location.href = '{{ route('project.show', ['project' => $project->id]) }}';"
+                                        class="btn btn-outline-dark">Show details</button>
+                                    <button type="button"
+                                        onclick="location.href = '{{ route('project.advanced.stage', ['project' => $project->id]) }}';"
+                                        class="btn btn-outline-success">Codes &#8611; Categories</button>
+                                </td>
                                 <td><a href="javascript:void(0)" id="editProject" class="btn btn-info"
                                         onclick="editProject({{ $project->id }})">Edit Project</a></td>
                                 <td><a href="javascript:void(0)" onclick="deleteProject({{ $project->id }})"
                                         class="btn btn-danger">Delete</a></td>
                             @else
-                                <td><a class="btn btn-light"
-                                        href="{{ route('project.show', ['project' => $project->id]) }}">Details</a></td>
+                                <td class="btn-group" role="group" aria-label="Basic example"
+                                    style="padding-top: 0px!important">
+                                    <button type="button"
+                                        onclick="location.href = '{{ route('project.show', ['project' => $project->id]) }}';"
+                                        class="btn btn-outline-dark">Show details</button>
+                                    <button type="button"
+                                        onclick="location.href = '{{ route('project.advanced.stage', ['project' => $project->id]) }}';"
+                                        class="btn btn-outline-success">Codes &#8611; Categories</button>
+                                </td>
                                 <td></td>
                                 <td></td>
                             @endif

@@ -47,16 +47,26 @@
                             <td>{{ $interview->name }}</td>
                             <td>{{ \Illuminate\Support\Str::limit($interview->description, 50, $end = '...') }}</td>
                             @if (auth()->id() == $interview->project->user_id)
-                                <td><a class="btn btn-light"
-                                        href="{{ route('interview.show', ['interview' => $interview->id]) }}">Details</a>
+                                <td class="btn-group" role="group" aria-label="Basic example" style="padding-top: 0px!important">
+                                    <button type="button"
+                                        onclick="location.href = '{{ route('interview.show', ['interview' => $interview->id]) }}';"
+                                        class="btn btn-outline-dark">Open Coding</button>
+                                        <button type="button"
+                                        onclick="location.href = '{{ route('interview.analise', ['interview' => $interview->id]) }}';"
+                                        class="btn btn-outline-success">Code Analise</button>
                                 </td>
                                 <td><a href="javascript:void(0)" id="editInterview" class="btn btn-info"
                                         onclick="editInterview({{ $interview->id }})">Edit Interview</a></td>
                                 <td><a href="javascript:void(0)" onclick="deleteInterview({{ $interview->id }})"
                                         class="btn btn-danger">Delete</a></td>
                             @else
-                                <td><a class="btn btn-warning"
-                                        href="{{ route('interview.show', ['interview' => $interview->id]) }}">Start Coding</a>
+                                <td class="btn-group" role="group" aria-label="Basic example" style="padding-top: 0px!important">
+                                    <button type="button"
+                                        onclick="location.href = '{{ route('interview.show', ['interview' => $interview->id]) }}';"
+                                        class="btn btn-outline-dark">Open Coding</button>
+                                        <button type="button"
+                                        onclick="location.href = '{{ route('interview.analise', ['interview' => $interview->id]) }}';"
+                                        class="btn btn-outline-success">Code Analise</button>
                                 </td>
                                 <td></td>
                                 <td></td>

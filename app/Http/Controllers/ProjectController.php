@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
+use App\Code;
 use App\Interview;
 use App\Project;
 use Illuminate\Http\Request;
@@ -29,6 +31,36 @@ class ProjectController extends Controller
     {
         //
     }
+
+
+    public function advanced_stage(Project $project){
+
+        $codes = Code::join('quotes', 'codes.quote_id', '=', 'quotes.id')
+        ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
+        ->join('users', 'codes.user_id', '=', 'users.id')
+        // ->join('code_categories', 'code_categories.code_id', 'codes.id')
+        // ->join('categories', 'code_categories.category_id', 'categories.id')
+        ->where('interviews.project_id', $project->id)
+        ->select('codes.*','quotes.description AS quote_description', 'users.name AS user','interviews.name AS interview')
+        ->orderBy('codes.id','DESC')
+        ->paginate(5,["*"], "codes");
+
+        $categories = Category::join('users', 'categories.user_id', '=', 'users.id')
+        // ->join('code_categories', 'code_categories.category_id', 'categories.id')
+        // ->join('codes', 'code_categories.code_id', 'codes.id')
+        ->where('categories.project_id', $project->id)
+        ->select('categories.*','users.name AS user')
+        ->orderBy('categories.id','DESC')
+        ->paginate(5,["*"], "categories");
+
+        return view('app.code.index',[
+            'titulo'=>'Codes and Categories',
+            'codes' => $codes,
+            'categories' => $categories,
+            'project' => $project
+        ]);
+    }
+
 
     /**
      * Store a newly created resource in storage.

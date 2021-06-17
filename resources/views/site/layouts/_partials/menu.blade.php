@@ -9,13 +9,16 @@
             @if (Route::has('login'))
                 @auth
                     <li class="nav-item"><a class="nav-link" href="{{ url('/home') }}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="">About us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="">Contact</a></li>
                 @endauth
             @endif
-            <li class="nav-item"><a class="nav-link" href="">Sobre Nós</a></li>
-            <li class="nav-item"><a class="nav-link" href="">Contato</a></li>
             <!-- Authentication Links -->
             @guest
                 @if (Route::has('register'))
+                <li class="nav-item"><a class="nav-link" href="{{ url('/') }}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="">About us</a></li>
+                <li class="nav-item"><a class="nav-link" href="">Contact</a></li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
                     </li>

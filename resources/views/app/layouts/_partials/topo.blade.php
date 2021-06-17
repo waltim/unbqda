@@ -5,16 +5,20 @@
     </div>
     <div class="menu-2">
         <ul class="nav justify-content-end">
-
-            <li class="nav-item"><a class="nav-link" href="{{ route('project.index') }}">Projetos</a></li>
-
             @if (Route::has('login'))
                 @auth
                     <li class="nav-item"><a class="nav-link" href="{{ url('/home') }}">Home</a></li>
                 @endauth
             @endif
+            <li class="nav-item"><a class="nav-link" href="{{ route('project.index') }}"> Research Projects</a></li>
+            {{-- <li class="nav-item">
+                <a class="nav-link" href="#">Codes Analise</a>
+            </li> --}}
+            {{-- <li class="nav-item">
+                <a class="nav-link"  href="{{ route('code.index') }}">Codes &#8611; Categories</a>
+            </li> --}}
             <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
+                <a class="nav-link" href="#">Theory Network</a>
             </li>
             <li class="nav-item dropdown">
                 @guest
