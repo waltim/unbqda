@@ -22,11 +22,10 @@ class CategoryController extends Controller
     }
 
     public function categories_options_link(Code $code){
-        // $categories = Code::rightJoin('code_categories','code_categories.code_id', 'codes.id')
-        // ->join('categories','code_categories.category_id', 'categories.id')
-        // ->select('categories.*')
-        // ->get();
-        $categories = Category::get();
+
+        $codes_categories = CodeCategory::where('code_id', $code->id)->pluck('category_id');
+        $categories = Category::whereNotIn('id', $codes_categories)->get();
+
         return view('app.category.index',['categories' => $categories]);
     }
 
@@ -42,17 +41,12 @@ class CategoryController extends Controller
 
 
     public function code_link_categories(Request $request){
+
         CodeCategory::unguard();
-        foreach($request->get('categories') as $catcode){
-            $codecategory = new CodeCategory();
-            $codecategory->code_id = $request->id;
-            $codecategory->category_id = $catcode;
-            if(!$codecategory->save()){
-                return response()->json($codecategory);
-            }
-        }
+        $code = Code::find($request->id);
+        $code->categories()->attach($request->get('categories'));
         CodeCategory::reguard();
-        return response()->json($codecategory);
+        return response()->json($code);
     }
 
     /**
@@ -109,7 +103,7 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        //
+
     }
 
     /**

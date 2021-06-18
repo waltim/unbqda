@@ -145,7 +145,7 @@ class CodeController extends Controller
      */
     public function destroy(Code $code)
     {
-        $code->code_categories()->delete();
+        $code->categories()->detach();
         $code->agreements()->delete();
         if($code->delete()){
             $quote = Quote::find($code->quote_id);

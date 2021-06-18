@@ -165,7 +165,7 @@
                         </div>
                         <div class="form-group" id="categories_options">
                             <select name="category_id" class="custom-select" id="ccategory_category_id">
-                                <option>Open this select menu</option>
+                                <option value="">Open this select menu</option>
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->description }}</option>
                                 @endforeach

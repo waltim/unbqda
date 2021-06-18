@@ -18,9 +18,15 @@ class Category extends Model
         return $this->hasMany(Category::class, 'category_id', 'id');
     }
 
-    public function code_categories()
+    public function codes()
     {
-        return $this->hasMany('App\CodeCategory');
+        return $this->belongsToMany('App\Code', 'code_categories', 'category_id', 'code_id');
+    }
+
+    public static function categoriesWhereCodeId($codeId)
+    {
+        $instance = new static;
+        return $instance->belongsToMany(Code::class,'code_categories', 'category_id', 'code_id')->wherePivot('code_id', '!=', $codeId);
     }
 
     public function project()

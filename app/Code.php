@@ -17,9 +17,9 @@ class Code extends Model
         return $this->hasMany('App\Agreement');
     }
 
-    public function code_categories()
+    public function categories()
     {
-        return $this->hasMany('App\CodeCategory');
+        return $this->belongsToMany('App\Category', 'code_categories', 'code_id', 'category_id');
     }
 
     public function quote()
