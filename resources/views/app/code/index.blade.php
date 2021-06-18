@@ -48,7 +48,11 @@
                                         {{ \Illuminate\Support\Str::limit($code->quote_description, 50, $end = '...') }}
                                     </td>
                                     <td>
-
+                                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                                            data-target="#exampleModalCenter"
+                                            onclick="getIdcode({{ $code->id }},'{{ $code->description }}')">
+                                            Link category
+                                        </button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -84,10 +88,11 @@
                                     <td>{{ $category->category->description ?? 'Super Category' }}</td>
                                     <td>
                                         @if ($category->user_id == auth()->id())
-                                        <a href="javascript:void(0)" onclick="deleteCategory({{ $category->id }})"
-                                            class="btn btn-danger">Delete</a>
+                                            <a href="javascript:void(0)" onclick="deleteCategory({{ $category->id }})"
+                                                class="btn btn-danger">Delete</a>
                                         @else
-                                        <a href="javascript:void(0)" class="btn btn-secondary disabled">by {{ $category->user }}</a>
+                                            <a href="javascript:void(0)" class="btn btn-secondary disabled">by
+                                                {{ $category->user }}</a>
                                         @endif
                                     </td>
                                 </tr>
@@ -97,6 +102,38 @@
                     {{ $categories->withQueryString()->links() }}
                     {{ $categories->total() > 0 ? $categories->total() . ' - registro(s) encontrado(s).' : 'nenhum registro encontrado.' }}
                 </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+                </div>
+                <form id="CodeLinkForm">
+                    <div class="modal-body">
+                        @csrf
+                        <div class="form-group" id="categories_options_link">
+                            <label style="font-size: 18px;" for="exampleFormControlInput1">Select some categories to link
+                                this code</label>
+                            <select name="code_categories_id" multiple required class="custom-select"
+                                id="code_category_id">
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}">{{ $category->description }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -175,6 +212,57 @@
                 })
             }
         }
+
+        function getIdcode(id, description) {
+            $('#CodeLinkForm')[0].reset();
+            $('#categories_options_link').load(document.URL + ' #categories_options_link');
+            document.getElementById("exampleModalCenterTitle").innerHTML = "<b>Code:</b> " + description;
+            $("#codeId").remove();
+            var new_input = "<input type='hidden' id='codeId' name='code_id' value='" + id + "'>";
+            $('#CodeLinkForm').append(new_input);
+            $.get('/show-categories/' + id, function(categories) {
+                document.getElementById("categories_options_link").innerHTML = categories;
+            });
+        }
+
+
+        $('#CodeLinkForm').submit(function(e) {
+            e.preventDefault();
+            $('#categories_options_link').load(document.URL + ' #categories_options_link');
+
+            var id = $("input[name=code_id]").val();
+            var _token = $("input[name=_token]").val();
+            var categories = $("select[name=code_categories_id]").val();
+            console.log(id, _token, categories);
+
+            $.ajax({
+                url: "{{ route('code.link.categories') }}",
+                type: "POST",
+                data: {
+                    id: id,
+                    categories: categories,
+                    _token: _token
+                },
+                success: function(response) {
+                    $("#exampleModalCenter").modal("toggle");
+                    $('#CodeLinkForm')[0].reset();
+                    $('#codes-table').load(document.URL + ' #codes-table');
+                },
+                error: function(data) {
+                    var errors = data.responseText;
+                    var jsonResponse = JSON.parse(errors);
+                    $.each(jsonResponse.errors, function(key, value) {
+                        $('#code_' + key).after(
+                            "<div class='alert alert-danger' id='alert_" +
+                            key + "' role='alert'>" + value + "</div>");
+                        setTimeout(function() {
+                            $('#alert_' + key).remove();
+                        }, 4000);
+                    });
+                }
+            })
+        });
+
 
 
         $('#CategoryForm').submit(function(e) {

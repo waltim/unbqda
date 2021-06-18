@@ -23,19 +23,21 @@ Route::fallback(function(){
 });
 
 Route::resource('project', 'ProjectController')->middleware('auth');
-Route::put('/project', 'ProjectController@update')->name('project.update');
-Route::get('/advanced-stage/{project}', 'ProjectController@advanced_stage')->name('project.advanced.stage');
+Route::put('/project', 'ProjectController@update')->name('project.update')->middleware('auth');
+Route::get('/advanced-stage/{project}', 'ProjectController@advanced_stage')->name('project.advanced.stage')->middleware('auth');
 
 Route::resource('interview', 'InterviewController')->middleware('auth');
-Route::put('/interview', 'InterviewController@update')->name('interview.update');
-Route::get('/code-analise/{interview}', 'InterviewController@analise')->name('interview.analise');
+Route::put('/interview', 'InterviewController@update')->name('interview.update')->middleware('auth');
+Route::get('/code-analise/{interview}', 'InterviewController@analise')->name('interview.analise')->middleware('auth');
 
 Route::resource('code', 'CodeController')->middleware('auth');
-Route::get('/code-highlight/{interview}', 'CodeController@highlight')->name('code.highlight');
-Route::post('/analise', 'CodeController@analise')->name('code.analise');
-Route::delete('/analise-delete/{agreement}', 'CodeController@analise_delete')->name('code.analise.delete');
+Route::get('/code-highlight/{interview}', 'CodeController@highlight')->name('code.highlight')->middleware('auth');
+Route::post('/analise', 'CodeController@analise')->name('code.analise')->middleware('auth');
+Route::delete('/analise-delete/{agreement}', 'CodeController@analise_delete')->name('code.analise.delete')->middleware('auth');
 
 Route::resource('category', 'CategoryController')->middleware('auth');
+Route::post('/code-link-categories', 'CategoryController@code_link_categories')->name('code.link.categories')->middleware('auth');
+Route::get('/show-categories/{code}', 'CategoryController@categories_options_link')->name('categories.options.link')->middleware('auth');
 
 Auth::routes();
 

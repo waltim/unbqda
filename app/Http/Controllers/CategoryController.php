@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Category;
+use App\Code;
+use App\CodeCategory;
+use Facade\FlareClient\Http\Response;
+use Facade\FlareClient\View;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -17,6 +21,15 @@ class CategoryController extends Controller
         //
     }
 
+    public function categories_options_link(Code $code){
+        // $categories = Code::rightJoin('code_categories','code_categories.code_id', 'codes.id')
+        // ->join('categories','code_categories.category_id', 'categories.id')
+        // ->select('categories.*')
+        // ->get();
+        $categories = Category::get();
+        return view('app.category.index',['categories' => $categories]);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -25,6 +38,21 @@ class CategoryController extends Controller
     public function create()
     {
         //
+    }
+
+
+    public function code_link_categories(Request $request){
+        CodeCategory::unguard();
+        foreach($request->get('categories') as $catcode){
+            $codecategory = new CodeCategory();
+            $codecategory->code_id = $request->id;
+            $codecategory->category_id = $catcode;
+            if(!$codecategory->save()){
+                return response()->json($codecategory);
+            }
+        }
+        CodeCategory::reguard();
+        return response()->json($codecategory);
     }
 
     /**
