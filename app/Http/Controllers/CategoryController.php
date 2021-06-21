@@ -114,7 +114,7 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        $category->code_categories()->delete();
+        $category->codes()->detach();
 
         Category::unguard();
         foreach($category->sub_categories() as $sub){

@@ -14,7 +14,7 @@ class Quote extends Model
 
     public function codes()
     {
-        return $this->hasMany('App\Code');
+        return $this->belongsToMany('App\Code');
     }
 
     public function translate()

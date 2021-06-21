@@ -35,7 +35,8 @@ class ProjectController extends Controller
 
     public function advanced_stage(Project $project){
 
-        $codes = Code::join('quotes', 'codes.quote_id', '=', 'quotes.id')
+        $codes = Code::join('code_quote', 'code_quote.code_id', '=', 'codes.id')
+        ->join('quotes', 'code_quote.quote_id', '=', 'quotes.id')
         ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
         ->join('users', 'codes.user_id', '=', 'users.id')
         // ->join('code_categories', 'code_categories.code_id', 'codes.id')

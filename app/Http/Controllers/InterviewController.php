@@ -57,7 +57,8 @@ class InterviewController extends Controller
      */
     public function show(Interview $interview)
     {
-        $codes = Code::join('quotes', 'codes.quote_id', '=', 'quotes.id')
+        $codes = Code::join('code_quote', 'code_quote.code_id', '=', 'codes.id')
+        ->join('quotes', 'code_quote.quote_id', '=', 'quotes.id')
         ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
         ->where('quotes.interview_id', '=', $interview->id)
         ->where('codes.user_id', '=', auth()->id())
@@ -74,7 +75,8 @@ class InterviewController extends Controller
 
     public function analise(Interview $interview){
 
-        $codes = Code::join('quotes', 'codes.quote_id', '=', 'quotes.id')
+        $codes = Code::join('code_quote', 'code_quote.code_id', '=', 'codes.id')
+        ->join('quotes', 'code_quote.quote_id', '=', 'quotes.id')
         ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
         ->where('quotes.interview_id', '=', $interview->id)
         ->select('codes.*')

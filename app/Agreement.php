@@ -16,6 +16,11 @@ class Agreement extends Model
         return $this->belongsTo('App\Code');
     }
 
+    public function observations()
+    {
+        return $this->hasMany('App\Observation');
+    }
+
     public function user()
     {
         return $this->belongsTo('App\User');

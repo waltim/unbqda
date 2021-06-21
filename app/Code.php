@@ -9,7 +9,7 @@ class Code extends Model
 {
     use SoftDeletes;
     protected $table = 'codes';
-    protected $fillable = ['description, memo, color, user_id, quote_id'];
+    protected $fillable = ['description, memo, color, user_id'];
 
 
     public function agreements()
@@ -22,9 +22,9 @@ class Code extends Model
         return $this->belongsToMany('App\Category', 'code_categories', 'code_id', 'category_id');
     }
 
-    public function quote()
+    public function quotes()
     {
-        return $this->belongsTo('App\Quote');
+        return $this->belongsToMany('App\Quote');
     }
 
     public function user()

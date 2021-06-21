@@ -47,23 +47,33 @@ class CodeController extends Controller
             'code_memo' => 'required'
         ]);
 
-        Quote::unguard();
-        $quote = new Quote();
-        $quote->description = $request->get('code_quote');
-        $quote->interview_id = $request->get('interview_id');
-        $quote->save();
-        Quote::reguard();
-        if ($quote) {
+        $quote = '';
+        if(Quote::where('description','=',$request->get('code_quote'))->count() < 1){
+            Quote::unguard();
+            $quote = new Quote();
+            $quote->description = $request->get('code_quote');
+            $quote->interview_id = $request->get('interview_id');
+            $quote->save();
+            Quote::reguard();
+        }else{
+            $quote = Quote::where('description','=',$request->get('code_quote'))->get();
+            $quote = Quote::find($quote[0]->id);
+        }
+        if ($quote != '') {
             Code::unguard();
             $code = new Code();
             $code->user_id = auth()->id();
-            $code->quote_id = $quote->id;
             $code->description = $request->get('code_name');
             $code->color = $request->get('code_color');
             $code->memo = $request->get('code_memo');
             $code->save();
             Code::reguard();
-            return response()->json($code);
+            if($code){
+                $code_quote = $code->quotes()->attach($quote->id);
+                return response()->json($code_quote);
+            }else{
+                return response()->json($code);
+            }
         } else {
             return response()->json($quote);
         }
@@ -92,7 +102,8 @@ class CodeController extends Controller
     }
 
     public function highlight(Interview $interview){
-        $quotes = Code::join('quotes', 'codes.quote_id', '=', 'quotes.id')
+        $quotes = Code::join('code_quote', 'code_quote.code_id', '=', 'codes.id')
+        ->join('quotes', 'code_quote.quote_id', '=', 'quotes.id')
         ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
         ->join('users', 'codes.user_id', '=', 'users.id')
         ->where('quotes.interview_id', '=', $interview->id)
@@ -147,12 +158,7 @@ class CodeController extends Controller
     {
         $code->categories()->detach();
         $code->agreements()->delete();
-        if($code->delete()){
-            $quote = Quote::find($code->quote_id);
-            $quote->delete();
-            return response()->json($quote);
-        }else{
-            return response()->json($code);
-        }
+        $code->quotes()->detach();
+        return response()->json($code);
     }
 }

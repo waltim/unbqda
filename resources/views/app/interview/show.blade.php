@@ -80,18 +80,26 @@
                     <th scope="col">Code name</th>
                     <th scope="col">Memo</th>
                     <th scope="col">Color</th>
-                    <th scope="col">Quote</th>
+                    {{-- <th scope="col">Quote</th> --}}
                     <th scope="col">Delete</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($codes as $code)
-                    <tr id="sid{{ $code->id }}" style="border-bottom: 3pt solid {{ $code->color }}">
-                        <td scope="row">{{ $code->id }}</td>
+                    <tr id="sid{{ $code->id }}">
+                        <td scope="row" style="background-color: {{ $code->color }}; color: white;">{{ $code->id }}</td>
                         <td>{{ $code->description }}</td>
                         <td>{{ \Illuminate\Support\Str::limit($code->memo, 50, $end = '...') }}</td>
                         <td>{{ $code->color }}</td>
-                        <td>{{ $code->quote->description }}</td>
+                        <td>
+                            @foreach ($code->quotes as $quote)
+                                @if ($loop->last)
+                                    {{ $quote->description }}
+                                @else
+                                    {{ $quote->description . ' - ' }}
+                                @endif
+                            @endforeach
+                        </td>
                         <td><a href="javascript:void(0)" onclick="deleteCode({{ $code->id }})"
                                 class="btn btn-danger">Delete</a></td>
                     </tr>
@@ -184,6 +192,9 @@
                     success: function(response) {
                         $('#codes-table').load(document.URL + ' #codes-table');
                         highlightText({{ $interview->id }});
+                    },
+                    error: function(data) {
+                        console.log(data);
                     }
                 })
             }
@@ -211,8 +222,10 @@
                 $.each(quotes, function(key, value) {
                     var searchword = value.description;
                     searchword = searchword.replace(/¶/g, '');
-                    var repstr = "<span title=' Code: " + value.code_name + " - " + value.name + "' style='background:white;padding:1px;border:" + value.color +
-                        " solid 1px;border-left: 15px solid " + value.color + ";font-weight: bold;'>" + searchword + "</span>";
+                    var repstr = "<span title=' Code: " + value.code_name + " - " + value.name +
+                        "' style='background:white;padding:1px;border:" + value.color +
+                        " solid 1px;border-left: 15px solid " + value.color + ";font-weight: bold;'>" +
+                        searchword + "</span>";
                     if (searchword != "") {
                         $('#interview-text').each(function() {
                             $(this).html($(this).html().replace(searchword, repstr));
@@ -277,7 +290,7 @@
             var quote = $("textarea[name=code_quote]").val();
             quote = quote.replace(/¶/g, '');
             var _token = $("input[name=_token]").val();
-            console.log(interview_id, name, color, memo, _token, quote);
+            // console.log(interview_id, name, color, memo, _token, quote);
             $.ajax({
                 url: "{{ route('code.store') }}",
                 type: "POST",
@@ -290,6 +303,7 @@
                     code_quote: quote
                 },
                 success: function(response) {
+                    console.log(response);
                     $('#codeForm')[0].reset();
                     $('#codes-table').load(document.URL + ' #codes-table');
                     highlightText(interview_id);
