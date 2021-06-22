@@ -28,7 +28,7 @@
                     <th scope="col">#</th>
                     <th scope="col">Code name</th>
                     <th scope="col">Memo</th>
-                    <th scope="col">Color</th>
+                    {{-- <th scope="col">Color</th> --}}
                     <th scope="col">Quote</th>
                     <th scope="col">Analises</th>
                 </tr>
@@ -36,11 +36,19 @@
             <tbody>
                 @foreach ($codes as $code)
                     <tr id="sid{{ $code->id }}">
-                        <td scope="row">{{ $code->id }}</td>
+                        <td scope="row" style="background-color: {{ $code->color }}; color: white;">{{ $code->id }}</td>
                         <td>{{ $code->description }}</td>
                         <td>{{ \Illuminate\Support\Str::limit($code->memo, 50, $end = '...') }}</td>
-                        <td>{{ $code->color }}</td>
-                        <td>{{ $code->quote->description }}</td>
+                        <td>
+                            @foreach ($code->quotes as $quote)
+                            @if ($loop->last)
+                                {{ $quote->description }}
+                            @else
+                                {{ $quote->description }}
+                                <hr>
+                            @endif
+                            @endforeach
+                        </td>
                         <td class="btn-group" role="group" aria-label="Basic example" style="padding-top: 0px!important">
                             @php
                                 $analises = \DB::table('codes')

@@ -82,6 +82,7 @@ class InterviewController extends Controller
         ->where('quotes.interview_id', '=', $interview->id)
         ->select('codes.*')
         ->orderBy('codes.id','DESC')
+        ->distinct()
         ->paginate(10);
 
         return view('app.interview.analise', [
