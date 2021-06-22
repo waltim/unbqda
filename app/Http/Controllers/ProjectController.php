@@ -42,7 +42,7 @@ class ProjectController extends Controller
         ->select('codes.*')
         ->orderBy('codes.id','DESC')
         ->distinct()
-        ->paginate(5,["*"], "categories");
+        ->paginate(5,["*"], "codes");
 
         $categories = Category::join('users', 'categories.user_id', '=', 'users.id')
         ->where('categories.project_id', $project->id)
