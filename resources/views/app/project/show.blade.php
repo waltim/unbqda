@@ -35,7 +35,7 @@
                         <th scope="col">#</th>
                         <th scope="col">Name</th>
                         <th scope="col">Description</th>
-                        <th scope="col">View</th>
+                        <th scope="col">Actions</th>
                         <th scope="col">Edit</th>
                         <th scope="col">Delete</th>
                     </tr>
@@ -53,7 +53,10 @@
                                         class="btn btn-outline-dark">Open Coding</button>
                                         <button type="button"
                                         onclick="location.href = '{{ route('interview.analise', ['interview' => $interview->id]) }}';"
-                                        class="btn btn-outline-success">Code Analise</button>
+                                        class="btn btn-outline-primary">Code Analise</button>
+                                        <button type="button"
+                                        onclick="location.href = '{{ route('project.advanced.stage', ['project' => $interview->project_id]) }}';"
+                                        class="btn btn-outline-success">Codes &#8611; Categories</button>
                                 </td>
                                 <td><a href="javascript:void(0)" id="editInterview" class="btn btn-info"
                                         onclick="editInterview({{ $interview->id }})">Edit Interview</a></td>

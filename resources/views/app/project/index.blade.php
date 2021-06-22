@@ -43,9 +43,6 @@
                                     <button type="button"
                                         onclick="location.href = '{{ route('project.show', ['project' => $project->id]) }}';"
                                         class="btn btn-outline-dark">Show details</button>
-                                    <button type="button"
-                                        onclick="location.href = '{{ route('project.advanced.stage', ['project' => $project->id]) }}';"
-                                        class="btn btn-outline-success">Codes &#8611; Categories</button>
                                 </td>
                                 <td><a href="javascript:void(0)" id="editProject" class="btn btn-info"
                                         onclick="editProject({{ $project->id }})">Edit Project</a></td>

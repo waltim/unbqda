@@ -38,17 +38,13 @@ class ProjectController extends Controller
         $codes = Code::join('code_quote', 'code_quote.code_id', '=', 'codes.id')
         ->join('quotes', 'code_quote.quote_id', '=', 'quotes.id')
         ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
-        ->join('users', 'codes.user_id', '=', 'users.id')
-        // ->join('code_categories', 'code_categories.code_id', 'codes.id')
-        // ->join('categories', 'code_categories.category_id', 'categories.id')
         ->where('interviews.project_id', $project->id)
-        ->select('codes.*','quotes.description AS quote_description', 'users.name AS user','interviews.name AS interview')
+        ->select('codes.*')
         ->orderBy('codes.id','DESC')
-        ->paginate(5,["*"], "codes");
+        ->distinct()
+        ->paginate(5,["*"], "categories");
 
         $categories = Category::join('users', 'categories.user_id', '=', 'users.id')
-        // ->join('code_categories', 'code_categories.category_id', 'categories.id')
-        // ->join('codes', 'code_categories.code_id', 'codes.id')
         ->where('categories.project_id', $project->id)
         ->select('categories.*','users.name AS user')
         ->orderBy('categories.id','DESC')

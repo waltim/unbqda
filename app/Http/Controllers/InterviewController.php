@@ -64,6 +64,7 @@ class InterviewController extends Controller
         ->where('codes.user_id', '=', auth()->id())
         ->select('codes.*')
         ->orderBy('codes.id','DESC')
+        ->distinct()
         ->paginate(5);
 
         return view('app.interview.show', [

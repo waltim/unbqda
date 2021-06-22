@@ -44,8 +44,15 @@
                                     <td>{{ $code->description }}</td>
                                     <td title="{{ $code->memo }}">
                                         {{ \Illuminate\Support\Str::limit($code->memo, 50, $end = '...') }}</td>
-                                    <td title="{{ $code->quote_description }}">
-                                        {{ \Illuminate\Support\Str::limit($code->quote_description, 50, $end = '...') }}
+                                    <td>
+                                        @foreach ($code->quotes as $quote)
+                                        @if ($loop->last)
+                                            {{ $quote->description }}
+                                        @else
+                                            {{ $quote->description }}
+                                            <hr>
+                                        @endif
+                                    @endforeach
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"

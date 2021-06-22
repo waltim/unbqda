@@ -33,6 +33,8 @@ Route::get('/code-analise/{interview}', 'InterviewController@analise')->name('in
 Route::resource('code', 'CodeController')->middleware('auth');
 Route::get('/code-highlight/{interview}', 'CodeController@highlight')->name('code.highlight')->middleware('auth');
 Route::post('/analise', 'CodeController@analise')->name('code.analise')->middleware('auth');
+Route::post('/code-store-selected', 'CodeController@store_code_selected')->name('code.store.selected')->middleware('auth');
+Route::get('/options-code/{interview}', 'CodeController@options_code')->name('options.code')->middleware('auth');
 Route::delete('/analise-delete/{agreement}', 'CodeController@analise_delete')->name('code.analise.delete')->middleware('auth');
 
 Route::resource('category', 'CategoryController')->middleware('auth');

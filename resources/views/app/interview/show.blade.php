@@ -29,37 +29,105 @@
     <div style="width: 95%; margin: auto;">
         <div class="row">
             <div class="col-md-4">
-                <div class="child-sections">
+                {{-- <div class="child-sections">
                     <h1 class=".sub-titulos unselectable">Codes</h1>
+                </div> --}}
+                <div id="accordion">
+                    <div class="card">
+                        <div class="card-header" id="headingOne">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne"
+                                    aria-expanded="true" aria-controls="collapseOne">
+                                    Create a new code
+                                </button>
+                            </h5>
+                        </div>
+
+                        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                            <div class="card-body">
+                                <form id="codeForm">
+                                    @csrf
+                                    <input type="hidden" name="interview_id" value="{{ $interview->id }}">
+                                    <div class="form-group">
+                                        <label class="unselectable" for="exampleFormControlInput1">Name of code</label>
+                                        <input type="text" name="code_name" class="form-control code_name"
+                                            id="exampleFormControlInput1" placeholder="Succcinct Code">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="unselectable" for="exampleFormControlSelect1">Color</label>
+                                        <input type="color" id="color" class="btn btn-secondary" style="width: 5%">
+                                        <input type="text" name="code_color" class="form-control code_color"
+                                            id="choosen-color" placeholder="#0000FF">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="unselectable" for="exampleFormControlTextarea1">Quote</label>
+                                        <textarea class="form-control code_quote" name="code_quote"
+                                            placeholder="This refactoring make a code more succinct and more readably..."
+                                            id="quoteText" rows="3"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="unselectable" for="exampleFormControlTextarea1">Memo</label>
+                                        <textarea class="form-control code_memo" name="code_memo"
+                                            placeholder="This refactoring make a code more succinct and more readably..."
+                                            id="exampleFormControlTextarea1" rows="3"></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary mb-2">Create new code</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header" id="headingTwo">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo"
+                                    aria-expanded="false" aria-controls="collapseTwo" onclick="linkCodeToQuote({{ $interview->id }})">
+                                    Use an existing code
+                                </button>
+                            </h5>
+                        </div>
+                        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                            <div class="card-body">
+                                <form id="codeForm2">
+                                    @csrf
+                                    <input type="hidden" name="interview_id" value="{{ $interview->id }}">
+
+                                    <div class="form-group">
+                                        <label for="exampleFormControlSelect2">Codes</label>
+                                        <select name="code2_id" multiple class="form-control" id="codeOptions">
+                                        </select>
+                                      </div>
+
+                                    {{-- <div class="form-group">
+                                        <label class="unselectable" for="exampleFormControlInput1">Name of code</label>
+                                        <input type="text" name="code2_name" class="form-control code_name"
+                                            id="exampleFormControlInput1" placeholder="Succcinct Code">
+                                    </div> --}}
+
+
+                                    <div class="form-group">
+                                        <label class="unselectable" for="exampleFormControlSelect1">Color</label>
+                                        <input type="color" id="color2" class="btn btn-secondary" style="width: 5%">
+                                        <input type="text" name="code2_color" class="form-control code_color"
+                                            id="choosen-color2" placeholder="#0000FF">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="unselectable" for="exampleFormControlTextarea1">Quote</label>
+                                        <textarea class="form-control" name="code2_quote"
+                                            placeholder="This refactoring make a code more succinct and more readably..."
+                                            id="quoteText2" rows="3"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="unselectable" for="exampleFormControlTextarea1">Memo</label>
+                                        <textarea class="form-control" name="code2_memo"
+                                            placeholder="This refactoring make a code more succinct and more readably..."
+                                            id="exampleFormControlTextarea1" rows="3"></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary mb-2">Link code to quote</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <form id="codeForm">
-                    @csrf
-                    <input type="hidden" name="interview_id" value="{{ $interview->id }}">
-                    <div class="form-group">
-                        <label class="unselectable" for="exampleFormControlInput1">Name of code</label>
-                        <input type="text" name="code_name" class="form-control code_name" id="exampleFormControlInput1"
-                            placeholder="Succcinct Code">
-                    </div>
-                    <div class="form-group">
-                        <label class="unselectable" for="exampleFormControlSelect1">Color</label>
-                        <input type="color" id="color" class="btn btn-secondary" style="width: 5%">
-                        <input type="text" name="code_color" class="form-control code_color" id="choosen-color"
-                            placeholder="#0000FF">
-                    </div>
-                    <div class="form-group">
-                        <label class="unselectable" for="exampleFormControlTextarea1">Quote</label>
-                        <textarea class="form-control code_quote" name="code_quote"
-                            placeholder="This refactoring make a code more succinct and more readably..." id="quoteText"
-                            rows="3"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="unselectable" for="exampleFormControlTextarea1">Memo</label>
-                        <textarea class="form-control code_memo" name="code_memo"
-                            placeholder="This refactoring make a code more succinct and more readably..."
-                            id="exampleFormControlTextarea1" rows="3"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary mb-2">Create new code</button>
-                </form>
             </div>
             <div class="col-md-8 ex1">
                 <p id="interview-text"
@@ -80,14 +148,15 @@
                     <th scope="col">Code name</th>
                     <th scope="col">Memo</th>
                     <th scope="col">Color</th>
-                    {{-- <th scope="col">Quote</th> --}}
+                    <th scope="col">Quote</th>
                     <th scope="col">Delete</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($codes as $code)
                     <tr id="sid{{ $code->id }}">
-                        <td scope="row" style="background-color: {{ $code->color }}; color: white;">{{ $code->id }}</td>
+                        <td scope="row" style="background-color: {{ $code->color }}; color: white;">{{ $code->id }}
+                        </td>
                         <td>{{ $code->description }}</td>
                         <td>{{ \Illuminate\Support\Str::limit($code->memo, 50, $end = '...') }}</td>
                         <td>{{ $code->color }}</td>
@@ -235,17 +304,22 @@
             });
         }
 
-        // function editInterview(id) {
-        //     var key = parseInt(id);
-        //     $.get('/interview/' + key + '/edit', function(interview) {
-        //         document.getElementById("name").value = interview.name;
-        //         document.getElementById("description").value = interview.description;
-        //         $("#interviewId").remove();
-        //         var new_input = "<input type='hidden' id='interviewId' name='id' value='" + id + "'>";
-        //         $('#interviewEditForm').append(new_input);
-        //         $("#editInterviewForm").modal("toggle");
-        //     });
-        // }
+        function linkCodeToQuote(id) {
+            var key = parseInt(id);
+            $.get('/options-code/' + key, function(codes) {
+                $("#codeOptions").empty();
+                $("#codeOptions").append('<option>--Select Code--</option>');
+                if(codes)
+                {
+                    $.each(codes,function(key,value){
+                        $('#codeOptions').append($("<option/>", {
+                           value: key,
+                           text: value
+                        }));
+                    });
+                }
+            });
+        }
 
         // $('#interviewEditForm').submit(function(e) {
         //     e.preventDefault();
@@ -280,6 +354,50 @@
         //     })
         // })
 
+        $('#codeForm2').submit(function(e) {
+            e.preventDefault();
+            var interview_id = $("input[name=interview_id]").val();
+            var code_id = $("select[name=code2_id]").val();
+            var color = $("input[name=code2_color]").val();
+            var memo = $("textarea[name=code2_memo]").val();
+            var quote = $("textarea[name=code2_quote]").val();
+            var _token = $("input[name=_token]").val();
+            // console.log(interview_id, name, color, memo, _token, quote);
+            $.ajax({
+                url: "{{ route('code.store.selected') }}",
+                type: "POST",
+                data: {
+                    interview_id: interview_id,
+                    code_id: code_id,
+                    code_color: color,
+                    _token: _token,
+                    code_memo: memo,
+                    code_quote: quote
+                },
+                success: function(response) {
+                    console.log(response);
+                    $('#codeForm')[0].reset();
+                    $('#codeForm2')[0].reset();
+                    $('#codes-table').load(document.URL + ' #codes-table');
+                    linkCodeToQuote(interview_id);
+                    highlightText(interview_id);
+                },
+                error: function(data) {
+                    console.log(data);
+                    var errors = data.responseText;
+                    var jsonResponse = JSON.parse(errors);
+                    $.each(jsonResponse.errors, function(key, value) {
+                        $(".code2_" + key).after(
+                            "<div class='alert alert-danger' id='alert_" +
+                            key + "' role='alert'>" + value + "</div>");
+                        setTimeout(function() {
+                            $('#alert_' + key).remove();
+                        }, 4000);
+                    });
+                }
+            })
+        })
+
 
         $('#codeForm').submit(function(e) {
             e.preventDefault();
@@ -305,6 +423,7 @@
                 success: function(response) {
                     console.log(response);
                     $('#codeForm')[0].reset();
+                    $('#codeForm2')[0].reset();
                     $('#codes-table').load(document.URL + ' #codes-table');
                     highlightText(interview_id);
                 },
@@ -332,10 +451,15 @@
                 text = document.selection.createRange().text;
             }
             $("textarea#quoteText").val(text);
+            $("textarea#quoteText2").val(text);
         });
 
         jQuery('#color').on('change', function() {
             $("input#choosen-color").val(jQuery(this).val());
+        });
+
+        jQuery('#color2').on('change', function() {
+            $("input#choosen-color2").val(jQuery(this).val());
         });
 
     </script>
