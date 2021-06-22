@@ -30,23 +30,24 @@
                     <th scope="col">Memo</th>
                     {{-- <th scope="col">Color</th> --}}
                     <th scope="col">Quote</th>
-                    <th scope="col">Analises</th>
+                    <th scope="col">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($codes as $code)
                     <tr id="sid{{ $code->id }}">
-                        <td scope="row" style="background-color: {{ $code->color }}; color: white;">{{ $code->id }}</td>
+                        <td scope="row" style="background-color: {{ $code->color }}; color: white;">{{ $code->id }}
+                        </td>
                         <td>{{ $code->description }}</td>
                         <td>{{ \Illuminate\Support\Str::limit($code->memo, 50, $end = '...') }}</td>
                         <td>
                             @foreach ($code->quotes as $quote)
-                            @if ($loop->last)
-                                {{ $quote->description }}
-                            @else
-                                {{ $quote->description }}
-                                <hr>
-                            @endif
+                                @if ($loop->last)
+                                    {{ $quote->description }}
+                                @else
+                                    {{ $quote->description }}
+                                    <hr>
+                                @endif
                             @endforeach
                         </td>
                         <td class="btn-group" role="group" aria-label="Basic example" style="padding-top: 0px!important">
@@ -57,42 +58,52 @@
                                     ->where('agreements.code_id', '=', $code->id)
                                     ->where('agreements.deleted_at', null)
                                     ->get();
+
+                                $observations = \DB::table('observations')
+                                    ->where('observations.code_id', '=', $code->id)
+                                    ->where('observations.deleted_at', null)
+                                    ->get();
                             @endphp
                             @if ($analises->count() > 0)
                                 @switch($analises[0]->scale)
                                     @case(1)
-                                    <button type="button" onclick="deleteAnalise({{ $analises[0]->id }})"
-                                        class="btn btn-outline-danger">Strongly agree</button>
+                                        <button type="button" onclick="deleteAnalise({{ $analises[0]->id }})"
+                                            class="btn btn-outline-danger">Strongly agree</button>
                                     @break
 
                                     @case(2)
-                                    <button type="button" onclick="deleteAnalise({{ $analises[0]->id }})"
-                                        class="btn btn-outline-danger">Agree</button>
+                                        <button type="button" onclick="deleteAnalise({{ $analises[0]->id }})"
+                                            class="btn btn-outline-danger">Agree</button>
                                     @break
 
                                     @case(3)
-                                    <button type="button" onclick="deleteAnalise({{ $analises[0]->id }})"
-                                        class="btn btn-outline-danger">Neutral</button>
+                                        <button type="button" onclick="deleteAnalise({{ $analises[0]->id }})"
+                                            class="btn btn-outline-danger">Neutral</button>
                                     @break
 
                                     @case(4)
-                                    <button type="button" onclick="deleteAnalise({{ $analises[0]->id }})"
-                                        class="btn btn-outline-danger">Disagree</button>
+                                        <button type="button" onclick="deleteAnalise({{ $analises[0]->id }})"
+                                            class="btn btn-outline-danger">Disagree</button>
                                     @break
 
                                     @case(5)
-                                    <button type="button" onclick="deleteAnalise({{ $analises[0]->id }})"
-                                        class="btn btn-outline-danger">Strongly disagree</button>
+                                        <button type="button" onclick="deleteAnalise({{ $analises[0]->id }})"
+                                            class="btn btn-outline-danger">Strongly disagree</button>
                                     @break
 
                                     @default
-                                    <button type="button" onclick="deleteAnalise({{ $analises[0]->id }})"
-                                        class="btn btn-outline-danger">Remove analise</button>
+                                        <button type="button" onclick="deleteAnalise({{ $analises[0]->id }})"
+                                            class="btn btn-outline-danger">Remove analise</button>
                                 @endswitch
                             @else
                                 <button type="button" data-toggle="modal" data-target="#exampleModal"
                                     onclick="codeAnalise({{ $code->id }},'{{ $code->description }}','{{ $code->memo }}')"
                                     class="btn btn-outline-primary">Make analise</button>
+                            @endif
+                            @if ($observations->count() > 0)
+                                <button type="button"
+                                onclick="location.href = '{{ route('interview.observation', ['code' => $code->id]) }}'"
+                                    class="btn btn-outline-info">Show observations</button>
                             @endif
                         </td>
                     </tr>
@@ -128,6 +139,12 @@
                                 <option value="5">Strongly disagree</option>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label class="unselectable" for="exampleFormControlTextarea1">Observation</label>
+                            <textarea class="form-control" name="observation"
+                                placeholder="This code needs small changes to improve your understanding..."
+                                id="observation-text" rows="3"></textarea>
+                        </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary">Save analise</button>
@@ -153,6 +170,9 @@
                     },
                     success: function(response) {
                         $('#codes-table').load(document.URL + ' #codes-table');
+                    },
+                    error: function(data) {
+                        console.log(data);
                     }
                 })
             }
@@ -172,17 +192,19 @@
             e.preventDefault();
             var code_id = $("#code_id").val();
             var scale = $("select[name=scale]").val();
+            var observation = $("textarea[name=observation]").val();
             var _token = $("input[name=_token]").val();
             var user_id = {{ auth()->id() }};
-
+            console.log(observation, code_id, scale, user_id);
             $.ajax({
-                url: "{{ route('code.analise') }}",
+                url: "{{ route('code.observation') }}",
                 type: "POST",
                 data: {
                     code_id: code_id,
                     scale: scale,
                     _token: _token,
-                    user_id: user_id
+                    user_id: user_id,
+                    observation: observation
                 },
                 success: function(response) {
                     $("#exampleModal").modal("toggle");
@@ -190,9 +212,9 @@
                     $('#codes-table').load(document.URL + ' #codes-table');
                 },
                 error: function(data) {
+                    console.log(data);
                     var errors = data.responseText;
                     var jsonResponse = JSON.parse(errors);
-
                     $.each(jsonResponse.errors, function(key, value) {
                         $('#code_' + key).after(
                             "<div class='alert alert-danger' id='alert_" +
@@ -204,7 +226,6 @@
                 }
             })
         })
-
     </script>
 
 @endsection

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Agreement;
 use App\Code;
 use App\Interview;
 use App\Quote;
@@ -28,6 +29,24 @@ class InterviewController extends Controller
     public function create()
     {
         //
+    }
+
+    public function observations(Code $code)
+    {
+        $observations = Code::join('observations', 'observations.code_id', 'codes.id')
+            ->join('users', 'observations.user_id', 'users.id')
+            ->where('observations.code_id',  $code->id)
+            ->where('observations.deleted_at', null)
+            ->select('observations.*', 'users.name', 'users.id AS userId', 'users.email', 'codes.memo', 'codes.description AS code_name')
+            ->orderBy('observations.id', 'DESC')
+            ->get();
+
+        return view('app.interview.observation', [
+            'titulo' => 'Observations',
+            'interview' => $code->quotes()->first()->interview_id,
+            'observations' => $observations,
+            'code' => $code
+        ]);
     }
 
     /**
@@ -58,14 +77,14 @@ class InterviewController extends Controller
     public function show(Interview $interview)
     {
         $codes = Code::join('code_quote', 'code_quote.code_id', '=', 'codes.id')
-        ->join('quotes', 'code_quote.quote_id', '=', 'quotes.id')
-        ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
-        ->where('quotes.interview_id', '=', $interview->id)
-        ->where('codes.user_id', '=', auth()->id())
-        ->select('codes.*')
-        ->orderBy('codes.id','DESC')
-        ->distinct()
-        ->paginate(5);
+            ->join('quotes', 'code_quote.quote_id', '=', 'quotes.id')
+            ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
+            ->where('quotes.interview_id', '=', $interview->id)
+            ->where('codes.user_id', '=', auth()->id())
+            ->select('codes.*')
+            ->orderBy('codes.id', 'DESC')
+            ->distinct()
+            ->paginate(5);
 
         return view('app.interview.show', [
             'titulo' => $interview->name,
@@ -74,16 +93,16 @@ class InterviewController extends Controller
         ]);
     }
 
-    public function analise(Interview $interview){
-
+    public function analise(Interview $interview)
+    {
         $codes = Code::join('code_quote', 'code_quote.code_id', '=', 'codes.id')
-        ->join('quotes', 'code_quote.quote_id', '=', 'quotes.id')
-        ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
-        ->where('quotes.interview_id', '=', $interview->id)
-        ->select('codes.*')
-        ->orderBy('codes.id','DESC')
-        ->distinct()
-        ->paginate(10);
+            ->join('quotes', 'code_quote.quote_id', '=', 'quotes.id')
+            ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
+            ->where('quotes.interview_id', '=', $interview->id)
+            ->select('codes.*')
+            ->orderBy('codes.id', 'DESC')
+            ->distinct()
+            ->paginate(10);
 
         return view('app.interview.analise', [
             'titulo' => $interview->name,

@@ -6,6 +6,7 @@ use App\Agreement;
 use App\Category;
 use App\Code;
 use App\Interview;
+use App\Observation;
 use App\Quote;
 use Illuminate\Http\Request;
 
@@ -18,7 +19,6 @@ class CodeController extends Controller
      */
     public function index()
     {
-
     }
 
     /**
@@ -31,16 +31,17 @@ class CodeController extends Controller
         //
     }
 
-    public function options_code(Interview $interview){
+    public function options_code(Interview $interview)
+    {
 
         $codes = Code::join('code_quote', 'code_quote.code_id', '=', 'codes.id')
-        ->join('quotes', 'code_quote.quote_id', '=', 'quotes.id')
-        ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
-        // ->where('quotes.interview_id', '=', $interview->id)
-        ->select('codes.*')
-        ->orderBy('codes.description','ASC')
-        ->pluck("description","id")
-        ->toArray();
+            ->join('quotes', 'code_quote.quote_id', '=', 'quotes.id')
+            ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
+            // ->where('quotes.interview_id', '=', $interview->id)
+            ->select('codes.*')
+            ->orderBy('codes.description', 'ASC')
+            ->pluck("description", "id")
+            ->toArray();
 
         return response()->json($codes);
     }
@@ -62,15 +63,15 @@ class CodeController extends Controller
         ]);
 
         $quote = '';
-        if(Quote::where('description','=',$request->get('code_quote'))->count() < 1){
+        if (Quote::where('description', '=', $request->get('code_quote'))->count() < 1) {
             Quote::unguard();
             $quote = new Quote();
             $quote->description = $request->get('code_quote');
             $quote->interview_id = $request->get('interview_id');
             $quote->save();
             Quote::reguard();
-        }else{
-            $quote = Quote::where('description','=',$request->get('code_quote'))->get();
+        } else {
+            $quote = Quote::where('description', '=', $request->get('code_quote'))->get();
             $quote = Quote::find($quote[0]->id);
         }
         if ($quote != '') {
@@ -82,10 +83,10 @@ class CodeController extends Controller
             $code->memo = $request->get('code_memo');
             $code->save();
             Code::reguard();
-            if($code){
+            if ($code) {
                 $code_quote = $code->quotes()->attach($quote->id);
                 return response()->json($code_quote);
-            }else{
+            } else {
                 return response()->json($code);
             }
         } else {
@@ -104,15 +105,15 @@ class CodeController extends Controller
         ]);
 
         $quote = '';
-        if(Quote::where('description','=',$request->get('code_quote'))->count() < 1){
+        if (Quote::where('description', '=', $request->get('code_quote'))->count() < 1) {
             Quote::unguard();
             $quote = new Quote();
             $quote->description = $request->get('code_quote');
             $quote->interview_id = $request->get('interview_id');
             $quote->save();
             Quote::reguard();
-        }else{
-            $quote = Quote::where('description','=',$request->get('code_quote'))->get();
+        } else {
+            $quote = Quote::where('description', '=', $request->get('code_quote'))->get();
             $quote = Quote::find($quote[0]->id);
         }
         if ($quote != '') {
@@ -145,19 +146,38 @@ class CodeController extends Controller
         //
     }
 
-    public function highlight(Interview $interview){
+    public function highlight(Interview $interview)
+    {
         $quotes = Code::join('code_quote', 'code_quote.code_id', '=', 'codes.id')
-        ->join('quotes', 'code_quote.quote_id', '=', 'quotes.id')
-        ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
-        ->join('users', 'codes.user_id', '=', 'users.id')
-        ->where('quotes.interview_id', '=', $interview->id)
-        ->select('quotes.*','codes.color', 'codes.description AS code_name','users.name')
-        ->get();
+            ->join('quotes', 'code_quote.quote_id', '=', 'quotes.id')
+            ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
+            ->join('users', 'codes.user_id', '=', 'users.id')
+            ->where('quotes.interview_id', '=', $interview->id)
+            ->select('quotes.*', 'codes.color', 'codes.description AS code_name', 'users.name')
+            ->get();
         return response()->json($quotes);
     }
 
-    public function analise(Request $request){
+    public function save_observation(Request $request){
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'code_id' => 'required|exists:codes,id',
+            'observation' => 'required'
+        ]);
 
+        Observation::unguard();
+        $observation = new Observation();
+        $observation->user_id = $request->get('user_id');
+        $observation->code_id = $request->get('code_id');
+        $observation->description = $request->get('observation');
+        $observation->save();
+        Observation::reguard();
+
+        return response()->json($observation);
+    }
+
+    public function analise(Request $request)
+    {
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'code_id' => 'required|exists:codes,id',
@@ -172,10 +192,22 @@ class CodeController extends Controller
         $agree->save();
         Agreement::reguard();
 
-        return response()->json($agree);
+        if ($agree && $request->get('observation') != '') {
+            Observation::unguard();
+            $observation = new Observation();
+            $observation->user_id = auth()->id();
+            $observation->code_id = $request->get('code_id');
+            $observation->description = $request->get('observation');
+            $observation->save();
+            Observation::reguard();
+            return response()->json($observation);
+        } else {
+            return response()->json($agree);
+        }
     }
 
-    public function analise_delete(Agreement $agreement){
+    public function analise_delete(Agreement $agreement)
+    {
         $agreement->delete();
         return response()->json($agreement);
     }

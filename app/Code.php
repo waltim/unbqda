@@ -22,6 +22,11 @@ class Code extends Model
         return $this->belongsToMany('App\Category', 'code_categories', 'code_id', 'category_id');
     }
 
+    public function observations()
+    {
+        return $this->hasMany('App\Observation');
+    }
+
     public function quotes()
     {
         return $this->belongsToMany('App\Quote');

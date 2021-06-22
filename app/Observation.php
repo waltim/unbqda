@@ -11,9 +11,9 @@ class Observation extends Model
     protected $table = "observations";
     protected $fillable = ['agreement_id, description, user_id'];
 
-    public function agreement()
+    public function code()
     {
-        return $this->belongsTo('App\Agreement');
+        return $this->belongsTo('App\Code');
     }
 
     public function user()
