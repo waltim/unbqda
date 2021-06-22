@@ -36,7 +36,7 @@ class CodeController extends Controller
         $codes = Code::join('code_quote', 'code_quote.code_id', '=', 'codes.id')
         ->join('quotes', 'code_quote.quote_id', '=', 'quotes.id')
         ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
-        ->where('quotes.interview_id', '=', $interview->id)
+        // ->where('quotes.interview_id', '=', $interview->id)
         ->select('codes.*')
         ->orderBy('codes.description','ASC')
         ->pluck("description","id")
