@@ -197,7 +197,7 @@
             var user_id = {{ auth()->id() }};
             console.log(observation, code_id, scale, user_id);
             $.ajax({
-                url: "{{ route('code.observation') }}",
+                url: "{{ route('code.analise') }}",
                 type: "POST",
                 data: {
                     code_id: code_id,

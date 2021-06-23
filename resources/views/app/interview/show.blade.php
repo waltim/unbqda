@@ -104,24 +104,24 @@
                                     </div> --}}
 
 
-                                    <div class="form-group">
+                                    {{-- <div class="form-group">
                                         <label class="unselectable" for="exampleFormControlSelect1">Color</label>
                                         <input type="color" id="color2" class="btn btn-secondary" style="width: 5%">
                                         <input type="text" name="code2_color" class="form-control code_color"
                                             id="choosen-color2" placeholder="#0000FF">
-                                    </div>
+                                    </div> --}}
                                     <div class="form-group">
                                         <label class="unselectable" for="exampleFormControlTextarea1">Quote</label>
                                         <textarea class="form-control" name="code2_quote"
                                             placeholder="This refactoring make a code more succinct and more readably..."
                                             id="quoteText2" rows="3"></textarea>
                                     </div>
-                                    <div class="form-group">
+                                    {{-- <div class="form-group">
                                         <label class="unselectable" for="exampleFormControlTextarea1">Memo</label>
                                         <textarea class="form-control" name="code2_memo"
                                             placeholder="This refactoring make a code more succinct and more readably..."
                                             id="exampleFormControlTextarea1" rows="3"></textarea>
-                                    </div>
+                                    </div> --}}
                                     <button type="submit" class="btn btn-primary mb-2">Link code to quote</button>
                                 </form>
                             </div>
@@ -308,7 +308,7 @@
             var key = parseInt(id);
             $.get('/options-code/' + key, function(codes) {
                 $("#codeOptions").empty();
-                $("#codeOptions").append('<option>--Select Code--</option>');
+                // $("#codeOptions").append('<option>--Select Code--</option>');
                 if(codes)
                 {
                     $.each(codes,function(key,value){
@@ -358,8 +358,6 @@
             e.preventDefault();
             var interview_id = $("input[name=interview_id]").val();
             var code_id = $("select[name=code2_id]").val();
-            var color = $("input[name=code2_color]").val();
-            var memo = $("textarea[name=code2_memo]").val();
             var quote = $("textarea[name=code2_quote]").val();
             var _token = $("input[name=_token]").val();
             // console.log(interview_id, name, color, memo, _token, quote);
@@ -369,9 +367,7 @@
                 data: {
                     interview_id: interview_id,
                     code_id: code_id,
-                    code_color: color,
                     _token: _token,
-                    code_memo: memo,
                     code_quote: quote
                 },
                 success: function(response) {

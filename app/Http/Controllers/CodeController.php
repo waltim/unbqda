@@ -97,10 +97,8 @@ class CodeController extends Controller
     public function store_code_selected(Request $request)
     {
         $request->validate([
-            'code_color' => 'required',
             'interview_id' => 'exists:interviews,id',
             'code_quote' => 'required',
-            'code_memo' => 'required',
             'code_id' => 'required'
         ]);
 

@@ -35,13 +35,11 @@ class ProjectController extends Controller
 
     public function advanced_stage(Project $project){
 
-        $codes = Code::join('code_quote', 'code_quote.code_id', '=', 'codes.id')
-        ->join('quotes', 'code_quote.quote_id', '=', 'quotes.id')
-        ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
-        ->where('interviews.project_id', $project->id)
-        ->select('codes.*')
-        ->orderBy('codes.id','DESC')
-        ->distinct()
+        $codes = Code::whereHas('quotes', function ($q) use ($project) {
+            $q->join('interviews', 'quotes.interview_id', '=', 'interviews.id');
+            $q->where('interviews.project_id', '=', $project->id);
+        })
+        ->orderBy('codes.id', 'DESC')
         ->paginate(5,["*"], "codes");
 
         $categories = Category::join('users', 'categories.user_id', '=', 'users.id')

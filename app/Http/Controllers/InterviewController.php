@@ -76,15 +76,12 @@ class InterviewController extends Controller
      */
     public function show(Interview $interview)
     {
-        $codes = Code::join('code_quote', 'code_quote.code_id', '=', 'codes.id')
-            ->join('quotes', 'code_quote.quote_id', '=', 'quotes.id')
-            ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
-            ->where('quotes.interview_id', '=', $interview->id)
-            ->where('codes.user_id', '=', auth()->id())
-            ->select('codes.*')
-            ->orderBy('codes.id', 'DESC')
-            ->distinct()
-            ->paginate(5);
+        $codes = Code::whereHas('quotes', function ($q) use ($interview) {
+            $q->where('codes.user_id', auth()->id());
+            $q->where('quotes.interview_id', '=', $interview->id);
+        })
+        ->orderBy('codes.id', 'DESC')
+        ->paginate(5);
 
         return view('app.interview.show', [
             'titulo' => $interview->name,
@@ -95,14 +92,12 @@ class InterviewController extends Controller
 
     public function analise(Interview $interview)
     {
-        $codes = Code::join('code_quote', 'code_quote.code_id', '=', 'codes.id')
-            ->join('quotes', 'code_quote.quote_id', '=', 'quotes.id')
-            ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
-            ->where('quotes.interview_id', '=', $interview->id)
-            ->select('codes.*')
-            ->orderBy('codes.id', 'DESC')
-            ->distinct()
-            ->paginate(10);
+        $codes = Code::whereHas('quotes', function ($q) use ($interview) {
+            $q->where('codes.user_id', auth()->id());
+            $q->where('quotes.interview_id', '=', $interview->id);
+        })
+        ->orderBy('codes.id', 'DESC')
+        ->paginate(10);
 
         return view('app.interview.analise', [
             'titulo' => $interview->name,
