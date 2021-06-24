@@ -241,6 +241,26 @@
         </div>
     </div> --}}
 
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+            </div>
+            <form id="RemoveMark">
+                @csrf
+                <div id="body-text" class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-danger">Remove this mark</button>
+                </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
     @component('app.layouts._partials.js-import')
     @endcomponent
 
@@ -291,10 +311,10 @@
                 $.each(quotes, function(key, value) {
                     var searchword = value.description;
                     searchword = searchword.replace(/¶/g, '');
-                    var repstr = "<span title=' Code: " + value.code_name + " - " + value.name +
+                    var repstr = "<a onclick=\"removeCodeQuote(" + value.code_id + ", '" + value.code_name + "', '" + value.name + "', '" + value.id + "')\" data-toggle='modal' data-target='#exampleModalCenter' title=' Code: " + value.code_name + " - " + value.name +
                         "' style='background:white;padding:1px;border:" + value.color +
                         " solid 1px;border-left: 15px solid " + value.color + ";font-weight: bold;'>" +
-                        searchword + "</span>";
+                        searchword + "</a>";
                     if (searchword != "") {
                         $('#interview-text').each(function() {
                             $(this).html($(this).html().replace(searchword, repstr));
@@ -320,6 +340,49 @@
                 }
             });
         }
+
+        function removeCodeQuote(id,code_name,user,quote){
+            document.getElementById("exampleModalCenterTitle").innerHTML = code_name;
+            $('#RemoveMark')[0].reset();
+            $("#code_id").remove();
+            $("#quote_id").remove();
+            $("#RemoveMark").append("<input type='hidden' id='code_id' name='code_id' value=" + id + " >");
+            $("#RemoveMark").append("<input type='hidden' id='quote_id' name='quote_id' value=" + quote + " >");
+        }
+
+        $('#RemoveMark').submit(function(e){
+            e.preventDefault();
+            var code_id = $("input[name=code_id]").val();
+            var _token = $("input[name=_token]").val();
+            var quote_id = $("input[name=quote_id]").val();
+            if (confirm("Do you really want to remove the link of this code and quote?")) {
+                console.log(quote_id, code_id, _token);
+                $.ajax({
+                    url: "{{ route('code.quote.remove') }}",
+                    type: "POST",
+                    data: {
+                        quote_id: quote_id,
+                        code_id: code_id,
+                        _token: _token,
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        $("#exampleModalCenter").modal("toggle");
+                        $('#RemoveMark')[0].reset();
+                        highlightText({{ $interview->id }});
+                        $('#codes-table').load(document.URL + ' #codes-table');
+                    },
+                    error: function(data) {
+                        console.log(data);
+                        var errors = data.responseText;
+                        var jsonResponse = JSON.parse(errors);
+                        $.each(jsonResponse.errors, function(key, value) {
+                            alert(key + ": " + value);
+                        });
+                    }
+                })
+            }
+        })
 
         // $('#interviewEditForm').submit(function(e) {
         //     e.preventDefault();

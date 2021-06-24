@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Agreement;
 use App\Category;
 use App\Code;
+use App\CodeQuote;
 use App\Interview;
 use App\Observation;
 use App\Quote;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CodeController extends Controller
 {
@@ -33,11 +35,8 @@ class CodeController extends Controller
 
     public function options_code(Interview $interview)
     {
-
-        $codes = Code::join('code_quote', 'code_quote.code_id', '=', 'codes.id')
-            ->join('quotes', 'code_quote.quote_id', '=', 'quotes.id')
-            ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
-            // ->where('quotes.interview_id', '=', $interview->id)
+        $codes = Code::join('projects', 'codes.project_id', '=', 'projects.id')
+            ->where('codes.project_id', '=', $interview->project_id)
             ->select('codes.*')
             ->orderBy('codes.description', 'ASC')
             ->pluck("description", "id")
@@ -59,7 +58,7 @@ class CodeController extends Controller
             'code_color' => 'required',
             'interview_id' => 'exists:interviews,id',
             'code_quote' => 'required',
-            'code_memo' => 'required'
+            'code_memo' => 'required',
         ]);
 
         $quote = '';
@@ -81,6 +80,8 @@ class CodeController extends Controller
             $code->description = $request->get('code_name');
             $code->color = $request->get('code_color');
             $code->memo = $request->get('code_memo');
+            $project = Interview::find($request->get('interview_id'));
+            $code->project_id = $project->project_id;
             $code->save();
             Code::reguard();
             if ($code) {
@@ -144,6 +145,20 @@ class CodeController extends Controller
         //
     }
 
+    public function remove_code_quote(Request $request){
+        $request->validate([
+            'quote_id' => 'required|exists:quotes,id',
+            'code_id' => 'required|exists:codes,id',
+        ]);
+
+        $code_quote = DB::table('code_quote')
+        ->where('code_id',$request->get('code_id'))
+        ->where('quote_id',$request->get('quote_id'))
+        ->delete();
+
+        return response()->json($code_quote);
+    }
+
     public function highlight(Interview $interview)
     {
         $quotes = Code::join('code_quote', 'code_quote.code_id', '=', 'codes.id')
@@ -151,7 +166,7 @@ class CodeController extends Controller
             ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
             ->join('users', 'codes.user_id', '=', 'users.id')
             ->where('quotes.interview_id', '=', $interview->id)
-            ->select('quotes.*', 'codes.color', 'codes.description AS code_name', 'users.name')
+            ->select('quotes.*', 'codes.color', 'codes.id AS code_id', 'codes.description AS code_name', 'users.name')
             ->get();
         return response()->json($quotes);
     }
@@ -233,6 +248,7 @@ class CodeController extends Controller
         $code->categories()->detach();
         $code->agreements()->delete();
         $code->quotes()->detach();
+        $code->delete();
         return response()->json($code);
     }
 }

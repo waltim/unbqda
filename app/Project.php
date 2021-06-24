@@ -17,6 +17,11 @@ class Project extends Model
         return $this->hasMany('App\Interview');
     }
 
+    public function codes()
+    {
+        return $this->hasMany('App\Code');
+    }
+
     public function categories()
     {
         return $this->hasMany('App\Category');

@@ -30,6 +30,7 @@ Route::resource('interview', 'InterviewController')->middleware('auth');
 Route::put('/interview', 'InterviewController@update')->name('interview.update')->middleware('auth');
 Route::get('/code-analise/{interview}', 'InterviewController@analise')->name('interview.analise')->middleware('auth');
 Route::get('/observations/{code}', 'InterviewController@observations')->name('interview.observation')->middleware('auth');
+Route::post('/remove-code-quote', 'CodeController@remove_code_quote')->name('code.quote.remove')->middleware('auth');
 
 Route::resource('code', 'CodeController')->middleware('auth');
 Route::get('/code-highlight/{interview}', 'CodeController@highlight')->name('code.highlight')->middleware('auth');

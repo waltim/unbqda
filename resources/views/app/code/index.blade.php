@@ -222,7 +222,7 @@
 
         function getIdcode(id, description) {
             $('#CodeLinkForm')[0].reset();
-            $('#categories_options_link').load(document.URL + ' #categories_options_link');
+            // $('#categories_options_link').load(document.URL + ' #categories_options_link');
             document.getElementById("exampleModalCenterTitle").innerHTML = "<b>Code:</b> " + description;
             $("#codeId").remove();
             var new_input = "<input type='hidden' id='codeId' name='code_id' value='" + id + "'>";
@@ -235,7 +235,7 @@
 
         $('#CodeLinkForm').submit(function(e) {
             e.preventDefault();
-            $('#categories_options_link').load(document.URL + ' #categories_options_link');
+            // $('#categories_options_link').load(document.URL + ' #categories_options_link');
 
             var id = $("input[name=code_id]").val();
             var _token = $("input[name=_token]").val();

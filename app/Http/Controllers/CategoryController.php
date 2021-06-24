@@ -26,6 +26,8 @@ class CategoryController extends Controller
         $codes_categories = CodeCategory::where('code_id', $code->id)->pluck('category_id');
         $categories = Category::whereNotIn('id', $codes_categories)->get();
 
+        // dd($codes_categories,$categories);
+
         return view('app.category.index',['categories' => $categories]);
     }
 
