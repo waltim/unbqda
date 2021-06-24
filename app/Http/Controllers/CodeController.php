@@ -151,10 +151,12 @@ class CodeController extends Controller
             'code_id' => 'required|exists:codes,id',
         ]);
 
-        $code_quote = DB::table('code_quote')
-        ->where('code_id',$request->get('code_id'))
-        ->where('quote_id',$request->get('quote_id'))
-        ->delete();
+        // $code_quote = CodeQuote::where('code_id',$request->get('code_id'))
+        // ->where('quote_id',$request->get('quote_id'))
+        // ->delete();
+
+        $code_quote = Code::find($request->get('code_id'));
+        $code_quote->quotes()->detach($request->get('quote_id'));
 
         return response()->json($code_quote);
     }

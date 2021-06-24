@@ -14,7 +14,7 @@ class AlterTableCodesAddFkProjects extends Migration
     public function up()
     {
         Schema::table('codes', function (Blueprint $table) {
-            // $table->unsignedBigInteger('project_id');
+            $table->unsignedBigInteger('project_id');
             $table->foreign('project_id')->references('id')->on('projects');
         });
     }
