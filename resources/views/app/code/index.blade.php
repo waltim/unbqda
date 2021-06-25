@@ -46,19 +46,24 @@
                                         {{ \Illuminate\Support\Str::limit($code->memo, 50, $end = '...') }}</td>
                                     <td>
                                         @foreach ($code->quotes as $quote)
-                                        @if ($loop->last)
-                                            {{ $quote->description }}
-                                        @else
-                                            {{ $quote->description }}
-                                            <hr>
-                                        @endif
-                                    @endforeach
+                                            @if ($loop->last)
+                                                {{ $quote->description }}
+                                            @else
+                                                {{ $quote->description }}
+                                                <hr>
+                                            @endif
+                                        @endforeach
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#exampleModalCenter"
-                                            onclick="getIdcode({{ $code->id }},'{{ $code->description }}')">
-                                            Link category
+                                            onclick="getIdcode({{ $code->id }},'{{ $code->description }}','link')">
+                                            Link categories
+                                        </button>
+                                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                                            data-target="#exampleModalCenter"
+                                            onclick="getIdcode({{ $code->id }},'{{ $code->description }}','remove')">
+                                            Remove categories
                                         </button>
                                     </td>
                                 </tr>
@@ -128,8 +133,7 @@
                         <div class="form-group" id="categories_options_link">
                             <label style="font-size: 18px;" for="exampleFormControlInput1">Select some categories to link
                                 this code</label>
-                            <select name="code_categories_id" multiple required class="custom-select"
-                                id="code_category_id">
+                            <select name="code_categories_id" multiple required class="custom-select" id="code_category_id">
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->description }}</option>
                                 @endforeach
@@ -220,22 +224,30 @@
             }
         }
 
-        function getIdcode(id, description) {
+        function getIdcode(id, description, type) {
+            console.log(type);
             $('#CodeLinkForm')[0].reset();
-            // $('#categories_options_link').load(document.URL + ' #categories_options_link');
             document.getElementById("exampleModalCenterTitle").innerHTML = "<b>Code:</b> " + description;
             $("#codeId").remove();
             var new_input = "<input type='hidden' id='codeId' name='code_id' value='" + id + "'>";
             $('#CodeLinkForm').append(new_input);
-            $.get('/show-categories/' + id, function(categories) {
-                document.getElementById("categories_options_link").innerHTML = categories;
-            });
+
+            if(type == 'link'){
+                $.get('/show-categories/' + id, function(categories) {
+                    document.getElementById("categories_options_link").innerHTML = categories;
+                });
+            }else{
+                $.get('/show-categories/' + id, function(categories) {
+                    document.getElementById("categories_options_link").innerHTML = categories;
+                });
+            }
+
+
         }
 
 
         $('#CodeLinkForm').submit(function(e) {
             e.preventDefault();
-            // $('#categories_options_link').load(document.URL + ' #categories_options_link');
 
             var id = $("input[name=code_id]").val();
             var _token = $("input[name=_token]").val();
@@ -320,7 +332,6 @@
         jQuery('#color').on('change', function() {
             $("input#choosen-color").val(jQuery(this).val());
         });
-
     </script>
 
 @endsection

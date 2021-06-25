@@ -22,6 +22,9 @@
         <h1 class=".sub-titulos">Codes</h1>
     </div>
     <div id="codes-table" style="width: 90%; margin-left: auto; margin-right: auto;">
+        <button type="button" class="btn btn-primary float-right col-md-2" data-toggle="modal" data-target="#exampleModalLong">
+            Show Interview
+          </button>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -154,6 +157,26 @@
             </div>
         </div>
     </div>
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">{{ $interview->name }}</h5>
+        </div>
+        <div class="modal-body">
+            <p style="color: black!important; white-space: pre-wrap; text-align: justify; font-size: 18px">
+                {{ $interview->description }}
+            </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary col-md-3" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
     @component('app.layouts._partials.js-import')
     @endcomponent
