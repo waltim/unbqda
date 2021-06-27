@@ -93,7 +93,6 @@ class InterviewController extends Controller
     public function analise(Interview $interview)
     {
         $codes = Code::whereHas('quotes', function ($q) use ($interview) {
-            $q->where('codes.user_id', auth()->id());
             $q->where('quotes.interview_id', '=', $interview->id);
         })
         ->orderBy('codes.id', 'DESC')

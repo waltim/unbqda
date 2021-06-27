@@ -23,12 +23,6 @@ class Category extends Model
         return $this->belongsToMany('App\Code', 'code_categories', 'category_id', 'code_id');
     }
 
-    public static function categoriesWhereCodeId($codeId)
-    {
-        $instance = new static;
-        return $instance->belongsToMany(Code::class,'code_categories', 'category_id', 'code_id')->wherePivot('code_id', '!=', $codeId);
-    }
-
     public function project()
     {
         return $this->belongsTo('App\Project');

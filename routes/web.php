@@ -42,7 +42,9 @@ Route::delete('/analise-delete/{agreement}', 'CodeController@analise_delete')->n
 
 Route::resource('category', 'CategoryController')->middleware('auth');
 Route::post('/code-link-categories', 'CategoryController@code_link_categories')->name('code.link.categories')->middleware('auth');
+Route::post('/code-deslink-categories', 'CategoryController@deslink_categories')->name('deslink.categories')->middleware('auth');
 Route::get('/show-categories/{code}', 'CategoryController@categories_options_link')->name('categories.options.link')->middleware('auth');
+Route::get('/show-categories-deslink/{code}', 'CategoryController@categories_options_deslink')->name('categories.options.deslink')->middleware('auth');
 
 Auth::routes();
 

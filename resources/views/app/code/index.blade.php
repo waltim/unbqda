@@ -34,6 +34,7 @@
                                 <th scope="col">Name</th>
                                 <th scope="col">Memo</th>
                                 <th scope="col">Quote</th>
+                                <th scope="col">Categories</th>
                                 <th scope="col">Actions</th>
                             </tr>
                         </thead>
@@ -42,29 +43,38 @@
                                 <tr>
                                     <th scope="row">{{ $code->id }}</th>
                                     <td>{{ $code->description }}</td>
-                                    <td title="{{ $code->memo }}">
-                                        {{ \Illuminate\Support\Str::limit($code->memo, 50, $end = '...') }}</td>
+                                    <td>
+                                        <a role="button" data-toggle="popover" class="btn btn-outline-success"
+                                                title="{{ $code->description }}"
+                                                data-content="{{ $code->memo }}">show memoing</a>
+                                    </td>
                                     <td>
                                         @foreach ($code->quotes as $quote)
-                                            @if ($loop->last)
-                                                {{ $quote->description }}
-                                            @else
-                                                {{ $quote->description }}
-                                                <hr>
-                                            @endif
+                                            <a role="button" data-toggle="popover" class="btn btn-outline-secondary"
+                                                title="Quote: {{ $quote->id }}"
+                                                data-content="{{ $quote->description }}">{{ $quote->id }}</a>
                                         @endforeach
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModalCenter"
-                                            onclick="getIdcode({{ $code->id }},'{{ $code->description }}','link')">
-                                            Link categories
-                                        </button>
-                                        <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModalCenter"
-                                            onclick="getIdcode({{ $code->id }},'{{ $code->description }}','remove')">
-                                            Remove categories
-                                        </button>
+                                        @foreach ($code->categories as $category)
+                                            <a role="button" data-toggle="popover" class="btn" style="background-color: {{ $category->color }}"
+                                                title="{{ $category->description }}"
+                                                data-content="{{ $category->memo }}">{{ $category->id }}</a>
+                                        @endforeach
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group" aria-label="Basic example">
+                                            <button type="button" class="btn btn-primary" data-toggle="modal"
+                                                data-target="#exampleModalCenter"
+                                                onclick="getIdcode({{ $code->id }},'{{ $code->description }}','link')">
+                                                Link categories
+                                            </button>
+                                            <button type="button" class="btn btn-danger" data-toggle="modal"
+                                                data-target="#exampleModalCenter"
+                                                onclick="getIdcode({{ $code->id }},'{{ $code->description }}','remove')">
+                                                Remove categories
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -128,11 +138,9 @@
                     <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
                 </div>
                 <form id="CodeLinkForm">
-                    <div class="modal-body">
+                    <div class="modal-body" id='formLabel'>
                         @csrf
                         <div class="form-group" id="categories_options_link">
-                            <label style="font-size: 18px;" for="exampleFormControlInput1">Select some categories to link
-                                this code</label>
                             <select name="code_categories_id" multiple required class="custom-select" id="code_category_id">
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->description }}</option>
@@ -225,24 +233,32 @@
         }
 
         function getIdcode(id, description, type) {
-            console.log(type);
+            // console.log(type);
             $('#CodeLinkForm')[0].reset();
             document.getElementById("exampleModalCenterTitle").innerHTML = "<b>Code:</b> " + description;
             $("#codeId").remove();
             var new_input = "<input type='hidden' id='codeId' name='code_id' value='" + id + "'>";
             $('#CodeLinkForm').append(new_input);
 
-            if(type == 'link'){
+            $("#codeId").remove();
+            var new_input = "<input type='hidden' id='codeId' name='code_id' value='" + id + "'>";
+            $('#CodeLinkForm').append(new_input);
+
+            if (type == 'link') {
                 $.get('/show-categories/' + id, function(categories) {
                     document.getElementById("categories_options_link").innerHTML = categories;
                 });
-            }else{
-                $.get('/show-categories/' + id, function(categories) {
+                $("#type-link").remove();
+                var new_type = "<input type='hidden' name='type' id='type-link' value='" + type + "'>";
+                $('#CodeLinkForm').append(new_type);
+            } else {
+                $.get('/show-categories-deslink/' + id, function(categories) {
                     document.getElementById("categories_options_link").innerHTML = categories;
                 });
+                $("#type-link").remove();
+                var new_type = "<input type='hidden' name='type' id='type-link' value='" + type + "'>";
+                $('#CodeLinkForm').append(new_type);
             }
-
-
         }
 
 
@@ -252,34 +268,48 @@
             var id = $("input[name=code_id]").val();
             var _token = $("input[name=_token]").val();
             var categories = $("select[name=code_categories_id]").val();
-            console.log(id, _token, categories);
+            var type = $("input[name=type]").val();
+            console.log(id, _token, categories, type);
+            if (type == 'link') {
+                console.log(type, 'fazendo link');
+                $.ajax({
+                    url: "{{ route('code.link.categories') }}",
+                    type: "POST",
+                    data: {
+                        id: id,
+                        categories: categories,
+                        _token: _token
+                    },
+                    success: function(response) {
+                        $("#exampleModalCenter").modal("toggle");
+                        $('#CodeLinkForm')[0].reset();
+                        $('#codes-table').load(document.URL + ' #codes-table');
+                    },
+                    error: function(data) {
+                        console.log(data);
+                    }
+                })
+            } else {
+                console.log(type, 'fazendo deslink');
+                $.ajax({
+                    url: "{{ route('deslink.categories') }}",
+                    type: "POST",
+                    data: {
+                        id: id,
+                        categories: categories,
+                        _token: _token
+                    },
+                    success: function(response) {
+                        $("#exampleModalCenter").modal("toggle");
+                        $('#CodeLinkForm')[0].reset();
+                        $('#codes-table').load(document.URL + ' #codes-table');
+                    },
+                    error: function(data) {
+                        console.log(data);
+                    }
+                })
+            }
 
-            $.ajax({
-                url: "{{ route('code.link.categories') }}",
-                type: "POST",
-                data: {
-                    id: id,
-                    categories: categories,
-                    _token: _token
-                },
-                success: function(response) {
-                    $("#exampleModalCenter").modal("toggle");
-                    $('#CodeLinkForm')[0].reset();
-                    $('#codes-table').load(document.URL + ' #codes-table');
-                },
-                error: function(data) {
-                    var errors = data.responseText;
-                    var jsonResponse = JSON.parse(errors);
-                    $.each(jsonResponse.errors, function(key, value) {
-                        $('#code_' + key).after(
-                            "<div class='alert alert-danger' id='alert_" +
-                            key + "' role='alert'>" + value + "</div>");
-                        setTimeout(function() {
-                            $('#alert_' + key).remove();
-                        }, 4000);
-                    });
-                }
-            })
         });
 
 
@@ -332,6 +362,10 @@
         jQuery('#color').on('change', function() {
             $("input#choosen-color").val(jQuery(this).val());
         });
+
+        $(function() {
+            $('[data-toggle="popover"]').popover()
+        })
     </script>
 
 @endsection

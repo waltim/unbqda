@@ -31,6 +31,16 @@ class CategoryController extends Controller
         return view('app.category.index',['categories' => $categories]);
     }
 
+    public function categories_options_deslink(Code $code){
+
+        $codes_categories = CodeCategory::where('code_id', $code->id)->pluck('category_id');
+        $categories = Category::whereIn('id', $codes_categories)->get();
+
+        // dd($codes_categories,$categories);
+
+        return view('app.category.index',['categories' => $categories]);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -48,6 +58,12 @@ class CategoryController extends Controller
         $code = Code::find($request->id);
         $code->categories()->attach($request->get('categories'));
         CodeCategory::reguard();
+        return response()->json($code);
+    }
+
+    public function deslink_categories(Request $request){
+        $code = Code::find($request->id);
+        $code->categories()->detach($request->get('categories'));
         return response()->json($code);
     }
 
