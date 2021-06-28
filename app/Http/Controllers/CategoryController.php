@@ -109,7 +109,7 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        //
+        return response()->json($category);
     }
 
     /**
@@ -121,7 +121,26 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
+        $request->validate([
+            'description' => 'required|min:3',
+            'color' => 'required',
+            'memo' => 'required'
+        ]);
 
+        Category::unguard();
+        $category = category::find($request->get('id'));
+        $category->update($request->except(['_token', '_method']));
+        Category::reguard();
+        return response()->json($category);
+    }
+
+    public function options_category(Category $category){
+
+        $categories = Category::whereNotIn('id', [$category->id])
+        ->pluck("description", "id")
+        ->toArray();
+        // dd($categories);
+        return response()->json($categories);
     }
 
     /**

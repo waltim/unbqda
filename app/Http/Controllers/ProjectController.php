@@ -32,6 +32,10 @@ class ProjectController extends Controller
         //
     }
 
+    public function theory(){
+        return view('app.project.theory');
+    }
+
 
     public function advanced_stage(Project $project){
 

@@ -44,20 +44,23 @@
                                     <th scope="row">{{ $code->id }}</th>
                                     <td>{{ $code->description }}</td>
                                     <td>
-                                        <a role="button" data-toggle="popover" class="btn btn-outline-success"
-                                                title="{{ $code->description }}"
-                                                data-content="{{ $code->memo }}">show memoing</a>
+                                        <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus"
+                                            class="btn btn-outline-success popover-click" title="{{ $code->description }}"
+                                            data-content="{{ $code->memo }}">show
+                                            memoing</a>
                                     </td>
                                     <td>
                                         @foreach ($code->quotes as $quote)
-                                            <a role="button" data-toggle="popover" class="btn btn-outline-secondary"
+                                            <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus"
+                                                class="btn btn-outline-secondary popover-click"
                                                 title="Quote: {{ $quote->id }}"
                                                 data-content="{{ $quote->description }}">{{ $quote->id }}</a>
                                         @endforeach
                                     </td>
                                     <td>
                                         @foreach ($code->categories as $category)
-                                            <a role="button" data-toggle="popover" class="btn" style="background-color: {{ $category->color }}"
+                                            <a tabindex="0" role="button" data-toggle="popover" class="btn popover-click"
+                                                style="background-color: {{ $category->color }}; color: white;" data-trigger="focus"
                                                 title="{{ $category->description }}"
                                                 data-content="{{ $category->memo }}">{{ $category->id }}</a>
                                         @endforeach
@@ -106,12 +109,18 @@
                                         {{ $category->id }}</th>
                                     <td>{{ $category->description }}</td>
                                     <td title="{{ $category->memo }}">
-                                        {{ \Illuminate\Support\Str::limit($category->memo, 50, $end = '...') }}</td>
+                                        {{ \Illuminate\Support\Str::limit($category->memo, 50, $end = '...') }}
+                                    </td>
                                     <td>{{ $category->category->description ?? 'Super Category' }}</td>
                                     <td>
                                         @if ($category->user_id == auth()->id())
-                                            <a href="javascript:void(0)" onclick="deleteCategory({{ $category->id }})"
-                                                class="btn btn-danger">Delete</a>
+                                            <div class="btn-group" role="group" aria-label="Basic example">
+                                                <a onclick="editCategory({{ $category->id }})"
+                                                    class="btn btn-info">Edit</a>
+                                                <a href="javascript:void(0)"
+                                                    onclick="deleteCategory({{ $category->id }})"
+                                                    class="btn btn-danger">Delete</a>
+                                            </div>
                                         @else
                                             <a href="javascript:void(0)" class="btn btn-secondary disabled">by
                                                 {{ $category->user }}</a>
@@ -157,6 +166,53 @@
         </div>
     </div>
 
+
+    <div id="editCategoryModal" class="modal fade bd-example-modal-lg-edit" tabindex="-1" role="dialog"
+        aria-labelledby="asdfmyLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div style="width: 95%; margin: auto;">
+                    <div id="modal-action" style="text-align: center; margin-top: 3%;">
+                        <h3>Category update</h3>
+                    </div>
+                    <form id="CategoryEditForm">
+                        @csrf
+                        @method('PUT')
+                        <div class="form-group">
+                            <label style="font-size: 18px;" for="exampleFormControlInput1">Category name</label>
+                            <input required type="text" id="ccategory_description1" name="ccategory_description" value=""
+                                class="form-control" placeholder="The name of your category">
+                        </div>
+                        <div class="form-group">
+                            <label class="unselectable" for="exampleFormControlSelect1">Color</label>
+                            <input type="color" id="ccolor" class="btn btn-secondary" style="width: 5%">
+                            <input type="text" required name="ccategory_color" class="form-control" id="cchoosen-color1"
+                                placeholder="#0000FF">
+                        </div>
+                        <div class="form-group" id="categories_options_2">
+                            <select name="ccategory_id" class="" id="ccategory_category_id1">
+                                <option value="">Select one category</option>
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}">
+                                        {{ $category->description }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="unselectable" for="exampleFormControlTextarea1">Memo</label>
+                            <textarea required class="form-control" name="ccategory_memo"
+                                placeholder="This refactoring make a code more succinct and more readably..."
+                                id="ccategory_memo1" rows="3"></textarea>
+                        </div>
+                        <div class="form-group col-md-12 text-center">
+                            <input type="submit" class="btn btn-success col-md-4" value="Update category">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Large modal -->
     <div id="myModal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
         aria-hidden="true">
@@ -184,7 +240,7 @@
                         </div>
                         <div class="form-group" id="categories_options">
                             <select name="category_id" class="custom-select" id="ccategory_category_id">
-                                <option value="">Open this select menu</option>
+                                <option value="">Select one category</option>
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->description }}</option>
                                 @endforeach
@@ -224,6 +280,7 @@
                     },
                     success: function(response) {
                         $('#categories-table').load(document.URL + ' #categories-table');
+                        $('#codes-table').load(document.URL + ' #codes-table');
                     },
                     error: function(data) {
                         console.log(data);
@@ -232,8 +289,45 @@
             }
         }
 
+        function editCategory(id) {
+            $.get("/category/" + id + "/edit", function(category) {
+                console.log(category.category_id);
+                $('#CategoryEditForm')[0].reset();
+                $('#categories_options_2').load(document.URL + ' #categories_options_2');
+                document.getElementById("ccategory_description1").value = category.description;
+                document.getElementById("cchoosen-color1").value = category.color;
+                document.getElementById("ccategory_memo1").innerHTML = category.memo;
+                $('#categoryId').remove();
+                $.get('/options-category/' + id, function(categories) {
+                    $("#ccategory_category_id1").empty();
+                    $("#ccategory_category_id1").append("<option value=''>Select one category</option>");
+                    if (categories) {
+                        $.each(categories, function(key, value) {
+                            if (key == category.category_id) {
+                                $('#ccategory_category_id1').append("<option value='" + key +
+                                    "' selected>" + value + "</option>");
+                            } else {
+                                $('#ccategory_category_id1').append($("<option/>", {
+                                    value: key,
+                                    text: value
+                                }));
+                            }
+                        });
+                    }
+                });
+
+                var new_input = "<input type='hidden' id='categoryId' name='ccategory' value='" + id + "'>";
+                $('#CategoryEditForm').append(new_input);
+                $("#editCategoryModal").modal("toggle");
+            });
+        }
+
+        function setSelected(id) {
+            document.getElementById("ccategory_category_id1").value = id;
+        }
+
         function getIdcode(id, description, type) {
-            // console.log(type);
+
             $('#CodeLinkForm')[0].reset();
             document.getElementById("exampleModalCenterTitle").innerHTML = "<b>Code:</b> " + description;
             $("#codeId").remove();
@@ -269,9 +363,8 @@
             var _token = $("input[name=_token]").val();
             var categories = $("select[name=code_categories_id]").val();
             var type = $("input[name=type]").val();
-            console.log(id, _token, categories, type);
+
             if (type == 'link') {
-                console.log(type, 'fazendo link');
                 $.ajax({
                     url: "{{ route('code.link.categories') }}",
                     type: "POST",
@@ -290,7 +383,6 @@
                     }
                 })
             } else {
-                console.log(type, 'fazendo deslink');
                 $.ajax({
                     url: "{{ route('deslink.categories') }}",
                     type: "POST",
@@ -316,7 +408,6 @@
 
         $('#CategoryForm').submit(function(e) {
             e.preventDefault();
-
             $('#categories_options').load(document.URL + ' #categories_options');
 
             var project_id = $("input[name=project_id]").val();
@@ -359,12 +450,60 @@
             })
         });
 
+        $('#CategoryEditForm').submit(function(e) {
+            e.preventDefault();
+
+            var id = $("input[name=ccategory]").val();
+            var color = $("input[name=ccategory_color]").val();
+            var memo = $("textarea[name=ccategory_memo]").val();
+            var description = $("input[name=ccategory_description]").val();
+            var _token = $("input[name=_token]").val();
+            var _method = $("input[name=_method]").val();
+            var category_id = $("select[name=ccategory_id]").val();
+
+
+            $.ajax({
+                url: "{{ route('category.update') }}",
+                type: "POST",
+                data: {
+                    id: id,
+                    category_id: category_id,
+                    color: color,
+                    memo: memo,
+                    description: description,
+                    _token: _token,
+                    _method: _method
+                },
+                success: function(response) {
+                    $("#editCategoryModal").modal("toggle");
+                    $('#CategoryEditForm')[0].reset();
+                    $('#categories-table').load(document.URL + ' #categories-table');
+                    $('#codes-table').load(document.URL + ' #codes-table');
+                },
+                error: function(data) {
+                    var errors = data.responseText;
+                    var jsonResponse = JSON.parse(errors);
+                    $.each(jsonResponse.errors, function(key, value) {
+                        alert(key + ": " + value);
+                    });
+                }
+            })
+        });
+
         jQuery('#color').on('change', function() {
             $("input#choosen-color").val(jQuery(this).val());
         });
 
+
+        jQuery('#ccolor').on('change', function() {
+            $("input#cchoosen-color1").val(jQuery(this).val());
+        });
+
         $(function() {
-            $('[data-toggle="popover"]').popover()
+            $('[data-toggle="popover"]').popover();
+        })
+        $('.popover-dismiss').popover({
+            trigger: 'focus'
         })
     </script>
 
