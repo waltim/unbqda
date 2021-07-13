@@ -80,7 +80,8 @@
                         <div class="card-header" id="headingTwo">
                             <h5 class="mb-0">
                                 <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo"
-                                    aria-expanded="false" aria-controls="collapseTwo" onclick="linkCodeToQuote({{ $interview->id }})">
+                                    aria-expanded="false" aria-controls="collapseTwo"
+                                    onclick="linkCodeToQuote({{ $interview->id }})">
                                     Use an existing code
                                 </button>
                             </h5>
@@ -93,35 +94,18 @@
 
                                     <div class="form-group">
                                         <label for="exampleFormControlSelect2">Codes</label>
-                                        <select name="code2_id" multiple class="form-control" id="codeOptions">
+                                        <select name="code2_id" multiple class="chosen-select form-control"
+                                            id="codeOptions">
                                         </select>
-                                      </div>
+                                    </div>
 
-                                    {{-- <div class="form-group">
-                                        <label class="unselectable" for="exampleFormControlInput1">Name of code</label>
-                                        <input type="text" name="code2_name" class="form-control code_name"
-                                            id="exampleFormControlInput1" placeholder="Succcinct Code">
-                                    </div> --}}
-
-
-                                    {{-- <div class="form-group">
-                                        <label class="unselectable" for="exampleFormControlSelect1">Color</label>
-                                        <input type="color" id="color2" class="btn btn-secondary" style="width: 5%">
-                                        <input type="text" name="code2_color" class="form-control code_color"
-                                            id="choosen-color2" placeholder="#0000FF">
-                                    </div> --}}
                                     <div class="form-group">
                                         <label class="unselectable" for="exampleFormControlTextarea1">Quote</label>
                                         <textarea class="form-control" name="code2_quote"
                                             placeholder="This refactoring make a code more succinct and more readably..."
                                             id="quoteText2" rows="3"></textarea>
                                     </div>
-                                    {{-- <div class="form-group">
-                                        <label class="unselectable" for="exampleFormControlTextarea1">Memo</label>
-                                        <textarea class="form-control" name="code2_memo"
-                                            placeholder="This refactoring make a code more succinct and more readably..."
-                                            id="exampleFormControlTextarea1" rows="3"></textarea>
-                                    </div> --}}
+
                                     <button type="submit" class="btn btn-primary mb-2">Link code to quote</button>
                                 </form>
                             </div>
@@ -163,9 +147,16 @@
                         <td>
                             @foreach ($code->quotes as $quote)
                                 @if ($loop->last)
-                                    {{ $quote->description }}
+                                    <a onclick="removeCodeQuote({{ $code->id }},'{{ $code->description }}', '{{ $code->user->name }}', {{ $quote->id }},'{{ $quote->description }}')"
+                                        data-toggle="modal" data-target="#exampleModalCenter">
+                                        {{ $quote->description }}
+                                    </a>
                                 @else
-                                    {{ $quote->description . ' - ' }}
+                                    <a onclick="removeCodeQuote({{ $code->id }},'{{ $code->description }}', '{{ $code->user->name }}', {{ $quote->id }},'{{ $quote->description }}')"
+                                        data-toggle="modal" data-target="#exampleModalCenter">
+                                        {{ $quote->description }}
+                                    </a>
+                                    <hr>
                                 @endif
                             @endforeach
                         </td>
@@ -241,33 +232,37 @@
         </div>
     </div> --}}
 
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
-            </div>
-            <form id="RemoveMark">
-                @csrf
-                <div id="body-text" class="modal-body">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+                </div>
+                <form id="RemoveMark">
+                    @csrf
+                    <div id="body-text-remove-mark" class="modal-body">
 
-                </div>
-                <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-danger">Remove this mark</button>
-                </div>
-            </form>
-          </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger">Remove this mark</button>
+                    </div>
+                </form>
+            </div>
         </div>
-      </div>
+    </div>
 
     @component('app.layouts._partials.js-import')
     @endcomponent
+
+    <script type="text/javascript" src="{{ asset('js/chosen.jquery.js') }}"></script>
 
     <script>
         $(window).bind("load", function() {
             highlightText({{ $interview->id }});
         });
+
 
         function deleteCode(id) {
 
@@ -311,10 +306,17 @@
                 $.each(quotes, function(key, value) {
                     var searchword = value.description;
                     searchword = searchword.replace(/¶/g, '');
-                    var repstr = "<a onclick=\"removeCodeQuote(" + value.code_id + ", '" + value.code_name + "', '" + value.name + "', '" + value.id + "')\" data-toggle='modal' data-target='#exampleModalCenter' title=' Code: " + value.code_name + " - " + value.name +
+                    // var repstr = "<a onclick=\"removeCodeQuote(" + value.code_id + ", '" + value.code_name +
+                    //     "', '" + value.name + "', '" + value.id +
+                    //     "')\" data-toggle='modal' data-target='#exampleModalCenter' title=' Code: " + value
+                    //     .code_name + " - " + value.name +
+                    //     "' style='background:white;padding:1px;border:" + value.color +
+                    //     " solid 1px;border-left: 15px solid " + value.color + ";font-weight: bold;'>" +
+                    //     searchword + "</a>";
+                    var repstr = "<span title=' Code: " + value.code_name + " - " + value.name +
                         "' style='background:white;padding:1px;border:" + value.color +
                         " solid 1px;border-left: 15px solid " + value.color + ";font-weight: bold;'>" +
-                        searchword + "</a>";
+                        searchword + "</span>";
                     if (searchword != "") {
                         $('#interview-text').each(function() {
                             $(this).html($(this).html().replace(searchword, repstr));
@@ -329,20 +331,21 @@
             $.get('/options-code/' + key, function(codes) {
                 $("#codeOptions").empty();
                 // $("#codeOptions").append('<option>--Select Code--</option>');
-                if(codes)
-                {
-                    $.each(codes,function(key,value){
+                if (codes) {
+                    $.each(codes, function(key, value) {
                         $('#codeOptions').append($("<option/>", {
-                           value: key,
-                           text: value
+                            value: key,
+                            text: value
                         }));
                     });
+                    $(".chosen-select").chosen()
                 }
             });
         }
 
-        function removeCodeQuote(id,code_name,user,quote){
+        function removeCodeQuote(id, code_name, user, quote, quote_text) {
             document.getElementById("exampleModalCenterTitle").innerHTML = code_name;
+            document.getElementById("body-text-remove-mark").innerHTML = quote_text;
             $('#RemoveMark')[0].reset();
             $("#code_id").remove();
             $("#quote_id").remove();
@@ -350,7 +353,7 @@
             $("#RemoveMark").append("<input type='hidden' id='quote_id' name='quote_id' value=" + quote + " >");
         }
 
-        $('#RemoveMark').submit(function(e){
+        $('#RemoveMark').submit(function(e) {
             e.preventDefault();
             var code_id = $("input[name=code_id]").val();
             var _token = $("input[name=_token]").val();
@@ -520,7 +523,6 @@
         jQuery('#color2').on('change', function() {
             $("input#choosen-color2").val(jQuery(this).val());
         });
-
     </script>
 
 @endsection

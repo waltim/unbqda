@@ -8,6 +8,7 @@ use App\Code;
 use App\CodeQuote;
 use App\Interview;
 use App\Observation;
+use App\Project;
 use App\Quote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -61,6 +62,8 @@ class CodeController extends Controller
             'code_memo' => 'required',
         ]);
 
+        $project = Interview::find($request->get('interview_id'));
+
         $quote = '';
         if (Quote::where('description', '=', $request->get('code_quote'))->count() < 1) {
             Quote::unguard();
@@ -74,21 +77,26 @@ class CodeController extends Controller
             $quote = Quote::find($quote[0]->id);
         }
         if ($quote != '') {
-            Code::unguard();
-            $code = new Code();
-            $code->user_id = auth()->id();
-            $code->description = $request->get('code_name');
-            $code->color = $request->get('code_color');
-            $code->memo = $request->get('code_memo');
-            $project = Interview::find($request->get('interview_id'));
-            $code->project_id = $project->project_id;
-            $code->save();
-            Code::reguard();
-            if ($code) {
-                $code_quote = $code->quotes()->attach($quote->id);
+            if(Code::where('description', '=', $request->get('code_name'))->where('project_id', $project->project_id)->count() < 1){
+                Code::unguard();
+                $code = new Code();
+                $code->user_id = auth()->id();
+                $code->description = $request->get('code_name');
+                $code->color = $request->get('code_color');
+                $code->memo = $request->get('code_memo');
+                $code->project_id = $project->project_id;
+                $code->save();
+                Code::reguard();
+                if ($code) {
+                    $code_quote = $code->quotes()->attach($quote->id);
+                    return response()->json($code_quote);
+                } else {
+                    return response()->json($code);
+                }
+            }else{
+                $codes = Code::where('description', '=', $request->get('code_name'))->where('project_id', $project->project_id)->pluck('id');
+                $code_quote = $quote->codes()->attach($codes);
                 return response()->json($code_quote);
-            } else {
-                return response()->json($code);
             }
         } else {
             return response()->json($quote);
