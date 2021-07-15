@@ -34,8 +34,8 @@
                                 <th scope="col">Name</th>
                                 <th scope="col">Memo</th>
                                 <th scope="col">Quote</th>
-                                <th scope="col">Categories</th>
-                                <th scope="col">Actions</th>
+                                <th scope="col">Categories linked</th>
+                                <th scope="col">Category actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -70,12 +70,12 @@
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
                                                 data-target="#exampleModalCenter"
                                                 onclick="getIdcode({{ $code->id }},'{{ $code->description }}','link')">
-                                                Link categories
+                                                Link
                                             </button>
                                             <button type="button" class="btn btn-danger" data-toggle="modal"
                                                 data-target="#exampleModalCenter"
                                                 onclick="getIdcode({{ $code->id }},'{{ $code->description }}','remove')">
-                                                Remove categories
+                                                Remove
                                             </button>
                                         </div>
                                     </td>
