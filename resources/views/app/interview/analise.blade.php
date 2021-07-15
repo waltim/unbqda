@@ -22,9 +22,10 @@
         <h1 class=".sub-titulos">Codes</h1>
     </div>
     <div id="codes-table" style="width: 90%; margin-left: auto; margin-right: auto;">
-        <button type="button" class="btn btn-primary float-right col-md-2" data-toggle="modal" data-target="#exampleModalLong">
+        <button type="button" class="btn btn-primary float-right col-md-2" data-toggle="modal"
+            data-target="#exampleModalLong">
             Show Interview
-          </button>
+        </button>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -105,7 +106,7 @@
                             @endif
                             @if ($observations->count() > 0)
                                 <button type="button"
-                                onclick="location.href = '{{ route('interview.observation', ['code' => $code->id]) }}'"
+                                    onclick="location.href = '{{ route('interview.observation', ['code' => $code->id]) }}'"
                                     class="btn btn-outline-info">Show observations</button>
                             @endif
                         </td>
@@ -159,29 +160,71 @@
     </div>
 
 
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">{{ $interview->name }}</h5>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">{{ $interview->name }}</h5>
+                </div>
+                <div class="modal-body" id="interview-text"
+                    style="color: black!important; white-space: pre-wrap; text-align: justify; font-size: 18px">
+                    {{ $interview->description }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary col-md-3" data-dismiss="modal">Close</button>
+                </div>
+            </div>
         </div>
-        <div class="modal-body">
-            <p style="color: black!important; white-space: pre-wrap; text-align: justify; font-size: 18px">
-                {{ $interview->description }}
-            </p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary col-md-3" data-dismiss="modal">Close</button>
-        </div>
-      </div>
     </div>
-  </div>
 
     @component('app.layouts._partials.js-import')
     @endcomponent
 
     <script>
+
+
+        function remove_tags(html) {
+            html = html.replace(/<br>/g, "$br$");
+            html = html.replace(/(?:\r\n|\r|\n)/g, '$n$');
+            var tmp = document.createElement("DIV");
+            tmp.innerHTML = html;
+            html = tmp.textContent || tmp.innerText;
+            html = html.replace(/\$br\$/g, "<br>");
+            html = html.replace(/\$n\$/g, "<br>");
+            html = html.replace(/¶/g, '');
+            html = html.replace(/\u00B6/g, '')
+            return html;
+        }
+
+
+        $(window).bind("load", function() {
+            highlightText({{ $interview->id }});
+        });
+
+        function highlightText(id) {
+            $.get('/code-highlight/' + id, function(quotes) {
+                var interview = $('#interview-text').text();
+                var mydiv = document.getElementById("interview-text");
+                var str = mydiv.innerHTML;
+                mydiv.innerHTML = remove_tags(str);
+                $.each(quotes, function(key, value) {
+                    var searchword = value.description;
+                    searchword = searchword.replace(/¶/g, '');
+                    var repstr = "<span title=' Code: " + value.code_name + " - " + value.name +
+                        "' style='background:white;padding:1px;border:" + value.color +
+                        " solid 1px;border-left: 15px solid " + value.color + ";font-weight: bold;'>" +
+                        searchword + "</span>";
+                    if (searchword != "") {
+                        $('#interview-text').each(function() {
+                            $(this).html($(this).html().replace(searchword, repstr));
+                        })
+                    }
+                });
+            });
+        }
+
         function deleteAnalise(id) {
 
             if (confirm("Do you really want to delete this analise?")) {

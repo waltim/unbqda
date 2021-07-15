@@ -306,13 +306,6 @@
                 $.each(quotes, function(key, value) {
                     var searchword = value.description;
                     searchword = searchword.replace(/¶/g, '');
-                    // var repstr = "<a onclick=\"removeCodeQuote(" + value.code_id + ", '" + value.code_name +
-                    //     "', '" + value.name + "', '" + value.id +
-                    //     "')\" data-toggle='modal' data-target='#exampleModalCenter' title=' Code: " + value
-                    //     .code_name + " - " + value.name +
-                    //     "' style='background:white;padding:1px;border:" + value.color +
-                    //     " solid 1px;border-left: 15px solid " + value.color + ";font-weight: bold;'>" +
-                    //     searchword + "</a>";
                     var repstr = "<span title=' Code: " + value.code_name + " - " + value.name +
                         "' style='background:white;padding:1px;border:" + value.color +
                         " solid 1px;border-left: 15px solid " + value.color + ";font-weight: bold;'>" +
