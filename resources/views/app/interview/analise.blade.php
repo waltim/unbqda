@@ -43,7 +43,7 @@
                         <td scope="row" style="background-color: {{ $code->color }}; color: white;">{{ $code->id }}
                         </td>
                         <td>{{ $code->description }}</td>
-                        <td>{{ \Illuminate\Support\Str::limit($code->memo, 50, $end = '...') }}</td>
+                        <td>{{ $code->memo }}</td>
                         <td>
                             @foreach ($code->quotes as $quote)
                                 @if ($loop->last)
