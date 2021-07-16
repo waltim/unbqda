@@ -15,10 +15,11 @@
             @endif
             <!-- Authentication Links -->
             @guest
-                @if (Route::has('register'))
+
                 <li class="nav-item"><a class="nav-link" href="{{ url('/') }}">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="">About us</a></li>
                 <li class="nav-item"><a class="nav-link" href="">Contact</a></li>
+                @if (Route::has('register'))
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
                     </li>
