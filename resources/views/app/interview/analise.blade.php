@@ -46,15 +46,18 @@
                         <td>{{ $code->memo }}</td>
                         <td>
                             @foreach ($code->quotes as $quote)
-                                @if ($loop->last)
-                                    {{ $quote->description }}
-                                @else
-                                    {{ $quote->description }}
-                                    <hr>
+                                @if ($quote->interview_id == $interview->id)
+                                    @if ($loop->last)
+                                        {{ $quote->description }}
+                                    @else
+                                        {{ $quote->description }}
+                                        <hr>
+                                    @endif
                                 @endif
                             @endforeach
                         </td>
-                        <td class="btn-group" role="group" aria-label="Basic example" style="padding-top: 0px!important">
+                        <td class="btn-group" role="group" aria-label="Basic example"
+                            style="padding-top: 0px!important">
                             @php
                                 $analises = \DB::table('codes')
                                     ->join('agreements', 'agreements.code_id', 'codes.id')
@@ -62,7 +65,7 @@
                                     ->where('agreements.code_id', '=', $code->id)
                                     ->where('agreements.deleted_at', null)
                                     ->get();
-
+                                
                                 $observations = \DB::table('observations')
                                     ->where('observations.code_id', '=', $code->id)
                                     ->where('observations.deleted_at', null)
@@ -183,8 +186,6 @@
     @endcomponent
 
     <script>
-
-
         function remove_tags(html) {
             html = html.replace(/<br>/g, "$br$");
             html = html.replace(/(?:\r\n|\r|\n)/g, '$n$');

@@ -51,8 +51,8 @@ Route::get('/options-category/{category}', 'CategoryController@options_category'
 
 Route::get('/theory', 'ProjectController@theory')->name('project.theory')->middleware('auth');
 
-Auth::routes(['register' => false]);
-// Auth::routes();
+// Auth::routes(['register' => false]);
+Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
