@@ -14,11 +14,40 @@
                 <button type="button"
                     onclick="location.href = '{{ route('project.show', ['project' => $interview->project_id]) }}';"
                     class="btn btn-outline-primary">List Interviews</button>
+                <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target=".code-memo">Code
+                    dictionary</button>
 
                 {{-- <button type="button" onclick="highlightText({{ $interview->id }});"
                     class="btn btn-outline-primary">Refresh
                     quotes</button> --}}
 
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Large modal -->
+    <div class="modal fade code-memo" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <table id="example" class="table table-striped table-bordered dt-responsive nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Code name</th>
+                            <th>Memoing</th>
+                            <th>User Coder</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($codememo as $cm)
+                            <tr>
+                                <td>{{ $cm->description }}</td>
+                                <td>{{ $cm->memo }}</td>
+                                <td>{{ $cm->user->name }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -232,8 +261,8 @@
         </div>
     </div> --}}
 
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-        aria-hidden="true">
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -308,16 +337,20 @@
                     searchword = searchword.replace(/¶/g, '');
 
                     $.get('/code-highlighter/' + value.highlighter, function(users) {
-                        if(users.length > 0){
-                        var repstr = "<span title=' Code: " + value.code_name + " - " + users[0].name +
-                        "' style='background:white;padding:1px;border:" + value.color +
-                        " solid 1px;border-left: 15px solid " + value.color + ";font-weight: bold;'>" +
-                        searchword + "</span>";
-                        }else{
-                        var repstr = "<span title=' Code: " + value.code_name + " - " + value.name +
-                        "' style='background:white;padding:1px;border:" + value.color +
-                        " solid 1px;border-left: 15px solid " + value.color + ";font-weight: bold;'>" +
-                        searchword + "</span>";
+                        if (users.length > 0) {
+                            var repstr = "<span title=' Code: " + value.code_name + " - " + users[0]
+                                .name +
+                                "' style='background:white;padding:1px;border:" + value.color +
+                                " solid 1px;border-left: 15px solid " + value.color +
+                                ";font-weight: bold;'>" +
+                                searchword + "</span>";
+                        } else {
+                            var repstr = "<span title=' Code: " + value.code_name + " - " + value
+                                .name +
+                                "' style='background:white;padding:1px;border:" + value.color +
+                                " solid 1px;border-left: 15px solid " + value.color +
+                                ";font-weight: bold;'>" +
+                                searchword + "</span>";
                         }
                         if (searchword != "") {
                             $('#interview-text').each(function() {
@@ -332,7 +365,8 @@
         function linkCodeToQuote(id) {
             var key = parseInt(id);
             $.get('/options-code/' + key, function(codes) {
-                $(".chosen-select").empty().trigger('change');
+                document.getElementById("codeOptions").options.length = 0;
+                // $("#codeOptions").empty();
                 if (codes) {
                     $.each(codes, function(key, value) {
                         $('#codeOptions').append($("<option/>", {
@@ -443,7 +477,6 @@
                     $('#codeForm')[0].reset();
                     $('#codeForm2')[0].reset();
                     $('#codes-table').load(document.URL + ' #codes-table');
-                    $(".chosen-select").empty().trigger('change');
                     linkCodeToQuote(interview_id);
                     highlightText(interview_id);
                 },
@@ -526,6 +559,10 @@
 
         jQuery('#color2').on('change', function() {
             $("input#choosen-color2").val(jQuery(this).val());
+        });
+
+        $(document).ready(function() {
+            $('#example').DataTable();
         });
     </script>
 

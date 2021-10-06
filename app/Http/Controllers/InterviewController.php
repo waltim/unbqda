@@ -83,10 +83,13 @@ class InterviewController extends Controller
         ->orderBy('codes.id', 'DESC')
         ->paginate(5);
 
+        $codememo = Code::where("project_id", '=', $interview->project_id)->get();
+
         return view('app.interview.show', [
             'titulo' => $interview->name,
             'interview' => $interview,
-            'codes' => $codes
+            'codes' => $codes,
+            'codememo' => $codememo
         ]);
     }
 
