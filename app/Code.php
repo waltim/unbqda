@@ -29,7 +29,8 @@ class Code extends Model
 
     public function quotes()
     {
-        return $this->belongsToMany('App\Quote');
+        return $this->belongsToMany('App\Quote')
+        ->withPivot('user_id');
     }
 
     public function user()

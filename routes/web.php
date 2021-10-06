@@ -33,6 +33,7 @@ Route::get('/observations/{code}', 'InterviewController@observations')->name('in
 Route::post('/remove-code-quote', 'CodeController@remove_code_quote')->name('code.quote.remove')->middleware('auth');
 
 Route::resource('code', 'CodeController')->middleware('auth');
+Route::get('/code-highlighter/{user_id}', 'CodeController@highlighter')->name('code.highlighter')->middleware('auth');
 Route::get('/code-highlight/{interview}', 'CodeController@highlight')->name('code.highlight')->middleware('auth');
 Route::post('/analise', 'CodeController@analise')->name('code.analise')->middleware('auth');
 Route::post('/observation-store', 'CodeController@save_observation')->name('code.observation')->middleware('auth');

@@ -306,15 +306,25 @@
                 $.each(quotes, function(key, value) {
                     var searchword = value.description;
                     searchword = searchword.replace(/¶/g, '');
-                    var repstr = "<span title=' Code: " + value.code_name + " - " + value.name +
+
+                    $.get('/code-highlighter/' + value.highlighter, function(users) {
+                        if(users.length > 0){
+                        var repstr = "<span title=' Code: " + value.code_name + " - " + users[0].name +
                         "' style='background:white;padding:1px;border:" + value.color +
                         " solid 1px;border-left: 15px solid " + value.color + ";font-weight: bold;'>" +
                         searchword + "</span>";
-                    if (searchword != "") {
-                        $('#interview-text').each(function() {
-                            $(this).html($(this).html().replace(searchword, repstr));
-                        })
-                    }
+                        }else{
+                        var repstr = "<span title=' Code: " + value.code_name + " - " + value.name +
+                        "' style='background:white;padding:1px;border:" + value.color +
+                        " solid 1px;border-left: 15px solid " + value.color + ";font-weight: bold;'>" +
+                        searchword + "</span>";
+                        }
+                        if (searchword != "") {
+                            $('#interview-text').each(function() {
+                                $(this).html($(this).html().replace(searchword, repstr));
+                            })
+                        }
+                    });
                 });
             });
         }
@@ -322,8 +332,7 @@
         function linkCodeToQuote(id) {
             var key = parseInt(id);
             $.get('/options-code/' + key, function(codes) {
-                $("#codeOptions").empty();
-                // $("#codeOptions").append('<option>--Select Code--</option>');
+                $(".chosen-select").empty().trigger('change');
                 if (codes) {
                     $.each(codes, function(key, value) {
                         $('#codeOptions').append($("<option/>", {
@@ -434,6 +443,7 @@
                     $('#codeForm')[0].reset();
                     $('#codeForm2')[0].reset();
                     $('#codes-table').load(document.URL + ' #codes-table');
+                    $(".chosen-select").empty().trigger('change');
                     linkCodeToQuote(interview_id);
                     highlightText(interview_id);
                 },
@@ -480,6 +490,7 @@
                     $('#codeForm')[0].reset();
                     $('#codeForm2')[0].reset();
                     $('#codes-table').load(document.URL + ' #codes-table');
+                    $('#codeOptions').empty().trigger('change');
                     highlightText(interview_id);
                 },
                 error: function(data) {

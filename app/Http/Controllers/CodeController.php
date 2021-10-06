@@ -10,6 +10,7 @@ use App\Interview;
 use App\Observation;
 use App\Project;
 use App\Quote;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -88,14 +89,14 @@ class CodeController extends Controller
                 $code->save();
                 Code::reguard();
                 if ($code) {
-                    $code_quote = $code->quotes()->attach($quote->id);
+                    $code_quote = $code->quotes()->attach($quote->id, ["user_id" => auth()->id()]);
                     return response()->json($code_quote);
                 } else {
                     return response()->json($code);
                 }
             }else{
                 $codes = Code::where('description', '=', $request->get('code_name'))->where('project_id', $project->project_id)->pluck('id');
-                $code_quote = $quote->codes()->attach($codes);
+                $code_quote = $quote->codes()->attach($codes, ["user_id" => auth()->id()]);
                 return response()->json($code_quote);
             }
         } else {
@@ -124,7 +125,7 @@ class CodeController extends Controller
             $quote = Quote::find($quote[0]->id);
         }
         if ($quote != '') {
-            $code_quote = $quote->codes()->attach($request->get('code_id'));
+            $code_quote = $quote->codes()->attach($request->get('code_id'), ["user_id" => auth()->id()]);
             return response()->json($code_quote);
         } else {
             return response()->json($quote);
@@ -176,9 +177,19 @@ class CodeController extends Controller
             ->join('interviews', 'quotes.interview_id', '=', 'interviews.id')
             ->join('users', 'codes.user_id', '=', 'users.id')
             ->where('quotes.interview_id', '=', $interview->id)
-            ->select('quotes.*', 'codes.color', 'codes.id AS code_id', 'codes.description AS code_name', 'users.name')
+            ->select('quotes.*', 'code_quote.user_id AS highlighter' ,  'codes.color', 'codes.id AS code_id', 'codes.description AS code_name', 'users.name')
             ->get();
+
         return response()->json($quotes);
+    }
+
+    public function highlighter($user){
+        $highlighter = User::where("id", $user)->get();
+        if($highlighter){
+            return response()->json($highlighter);
+        }else{
+            return response()->json($user);
+        }
     }
 
     public function save_observation(Request $request){

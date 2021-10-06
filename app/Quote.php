@@ -14,7 +14,8 @@ class Quote extends Model
 
     public function codes()
     {
-        return $this->belongsToMany('App\Code');
+        return $this->belongsToMany('App\Code')
+        ->withPivot('user_id');
     }
 
     public function translate()
