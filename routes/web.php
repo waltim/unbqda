@@ -40,6 +40,8 @@ Route::post('/observation-store', 'CodeController@save_observation')->name('code
 Route::post('/code-store-selected', 'CodeController@store_code_selected')->name('code.store.selected')->middleware('auth');
 Route::get('/options-code/{interview}', 'CodeController@options_code')->name('options.code')->middleware('auth');
 Route::delete('/analise-delete/{agreement}', 'CodeController@analise_delete')->name('code.analise.delete')->middleware('auth');
+Route::put('/code', 'CodeController@update')->name('code.update')->middleware('auth');
+
 
 Route::resource('category', 'CategoryController')->middleware('auth');
 Route::post('/code-link-categories', 'CategoryController@code_link_categories')->name('code.link.categories')->middleware('auth');

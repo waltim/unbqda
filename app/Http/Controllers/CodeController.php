@@ -253,9 +253,21 @@ class CodeController extends Controller
      * @param  \App\Code  $code
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Code $code)
+    public function update(Request $request)
     {
-        //
+        $request->validate([
+            'description' => 'required|min:3',
+            'color' => 'required',
+            'memo' => 'required',
+            'project_id' => 'required',
+            'id' => 'required'
+        ]);
+
+        Code::unguard();
+        $codeupdated = Code::find($request->id);
+        $codeupdated->update($request->except(['_token', '_method', 'project_id']));
+        Code::reguard();
+        return response()->json($codeupdated);
     }
 
     /**

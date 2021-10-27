@@ -17,6 +17,11 @@ class Interview extends Model
         return $this->hasMany('App\Quote');
     }
 
+    public function comments()
+    {
+        return $this->hasMany('App\Comment');
+    }
+
     public function project()
     {
         return $this->belongsTo('App\Project');
