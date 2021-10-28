@@ -6,6 +6,7 @@ use App\Agreement;
 use App\Code;
 use App\Interview;
 use App\Quote;
+use App\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -29,6 +30,22 @@ class InterviewController extends Controller
     public function create()
     {
         //
+    }
+
+    public function comments(Interview $interview){
+        $comments = Comment::join('interviews', 'interviews.id', 'comments.interview_id')
+        ->join('users', 'users.id', 'comments.user_id')
+        ->where('comments.interview_id',  $interview->id)
+        ->where('comments.deleted_at', null)
+        ->select('comments.*', 'users.name', 'users.email')
+        ->orderBy('comments.id', 'DESC')
+        ->get();
+
+        return view('app.interview.comment', [
+            'titulo' => 'Comments',
+            'interview' => $interview,
+            'comments' => $comments
+        ]);
     }
 
     public function observations(Code $code)
@@ -66,6 +83,20 @@ class InterviewController extends Controller
         $interview =  Interview::create($request->except('_token'));
         Interview::reguard();
         return response()->json($interview);
+    }
+
+
+    public function comment(Request $request){
+        $request->validate([
+            'description' => 'required',
+            'interview_id' => 'exists:interviews,id',
+            'user_id' => 'exists:users,id'
+        ]);
+
+        Comment::unguard();
+        $comment =  Comment::create($request->except('_token'));
+        Comment::reguard();
+        return response()->json($comment);
     }
 
     /**

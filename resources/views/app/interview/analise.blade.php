@@ -13,7 +13,11 @@
             <div class="btn-group" role="group" aria-label="Basic example">
                 <button type="button"
                     onclick="location.href = '{{ route('project.show', ['project' => $interview->project_id]) }}';"
-                    class="btn btn-outline-primary">List Interviews</button>
+                    class="btn-group btn-outline-primary">List Interviews</button>
+                <button type="button" role="group" class="btn-group btn-outline-primary" data-toggle="modal"
+                    data-target="#commentModal">
+                    New comment for interview
+                </button>
             </div>
         </div>
     </div>
@@ -22,10 +26,15 @@
         <h1 class=".sub-titulos">Codes</h1>
     </div>
     <div id="codes-table" style="width: 90%; margin-left: auto; margin-right: auto;">
-        <button type="button" class="btn btn-primary float-right col-md-2" data-toggle="modal"
-            data-target="#exampleModalLong">
-            Show Interview
-        </button>
+        <div class="btn-group float-right col-md-3" role="group" aria-label="Basic example">
+            <button type="button" class="btn-group btn-outline-primary " data-toggle="modal"
+                data-target="#exampleModalLong">
+                Show Interview
+            </button>
+            <button type="button"
+                onclick="location.href = '{{ route('interview.comment', ['interview' => $interview->id]) }}'"
+                class="btn-group btn-outline-info">interview comments</button>
+        </div>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -119,6 +128,35 @@
         </table>
         {{ $codes->withQueryString()->links() }}
         {{ $codes->total() > 0 ? $codes->total() . ' - registro(s) encontrado(s).' : 'nenhum registro encontrado.' }}
+    </div>
+
+
+    <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="comment-name">New comment</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="commentForm">
+                        @csrf
+                        <input type="hidden" name="comment_user" value="{{ auth()->id() }}">
+                        <input type="hidden" name="comment_interview" value="{{ $interview->id }}">
+                        <div class="form-group">
+                            <label class="unselectable" for="exampleFormControlTextarea1">Comment</label>
+                            <textarea class="form-control" name="comment"
+                                placeholder="This code needs small changes to improve your understanding..."
+                                id="comment-text" rows="3"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Send comment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Modal -->
@@ -290,6 +328,32 @@
                             $('#alert_' + key).remove();
                         }, 4000);
                     });
+                }
+            })
+        })
+
+        $('#commentForm').submit(function(e) {
+            e.preventDefault();
+            var interview_id = $("input[name=comment_interview]").val();
+            var comment = $("textarea[name=comment]").val();
+            var _token = $("input[name=_token]").val();
+            var user_id = {{ auth()->id() }};
+            console.log(comment, interview_id, _token, user_id);
+            $.ajax({
+                url: "{{ route('comment.interview') }}",
+                type: "POST",
+                data: {
+                    interview_id: interview_id,
+                    description: comment,
+                    _token: _token,
+                    user_id: user_id
+                },
+                success: function(response) {
+                    $("#commentModal").modal("toggle");
+                    $('#commentForm')[0].reset();
+                },
+                error: function(data) {
+                    console.log(data);
                 }
             })
         })

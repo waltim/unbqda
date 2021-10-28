@@ -31,6 +31,8 @@ Route::put('/interview', 'InterviewController@update')->name('interview.update')
 Route::get('/code-analise/{interview}', 'InterviewController@analise')->name('interview.analise')->middleware('auth');
 Route::get('/observations/{code}', 'InterviewController@observations')->name('interview.observation')->middleware('auth');
 Route::post('/remove-code-quote', 'CodeController@remove_code_quote')->name('code.quote.remove')->middleware('auth');
+Route::post('/comments', 'InterviewController@comment')->name('comment.interview')->middleware('auth');
+Route::get('/comments/{interview}', 'InterviewController@comments')->name('interview.comment')->middleware('auth');
 
 Route::resource('code', 'CodeController')->middleware('auth');
 Route::get('/code-highlighter/{user_id}', 'CodeController@highlighter')->name('code.highlighter')->middleware('auth');

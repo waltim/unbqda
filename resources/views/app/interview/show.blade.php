@@ -477,8 +477,10 @@
                     $('#codeForm')[0].reset();
                     $('#codeForm2')[0].reset();
                     $('#codes-table').load(document.URL + ' #codes-table');
-                    linkCodeToQuote(interview_id);
+                    $('.search-choice').remove();
                     highlightText(interview_id);
+                    linkCodeToQuote(interview_id);
+                    timeFunction();
                 },
                 error: function(data) {
                     console.log(data);
@@ -496,6 +498,12 @@
             })
         })
 
+        function timeFunction() {
+            setTimeout(function(){
+                $('.result-selected').addClass('test');
+                $('.test').addClass('active-result').removeClass('result-selected').removeClass('test');
+            }, 3000);
+        }
 
         $('#codeForm').submit(function(e) {
             e.preventDefault();
