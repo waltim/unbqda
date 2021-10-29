@@ -502,7 +502,7 @@
             setTimeout(function(){
                 $('.result-selected').addClass('test');
                 $('.test').addClass('active-result').removeClass('result-selected').removeClass('test');
-            }, 3000);
+            }, 5000);
         }
 
         $('#codeForm').submit(function(e) {
@@ -559,6 +559,7 @@
             }
             $("textarea#quoteText").val(text);
             $("textarea#quoteText2").val(text);
+            timeFunction();
         });
 
         jQuery('#color').on('change', function() {
