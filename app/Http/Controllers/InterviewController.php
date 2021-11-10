@@ -7,6 +7,7 @@ use App\Code;
 use App\Interview;
 use App\Quote;
 use App\Comment;
+use App\CodingLevel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -30,6 +31,17 @@ class InterviewController extends Controller
     public function create()
     {
         //
+    }
+
+    public function level(Request $request){
+        $request->validate([
+            'level' => 'required',
+            'interview_id' => 'exists:interviews,id'
+        ]);
+        CodingLevel::unguard();
+        $codingLevel =  CodingLevel::create($request->except('_token'));
+        CodingLevel::reguard();
+        return response()->json($codingLevel);
     }
 
     public function comments(Interview $interview){

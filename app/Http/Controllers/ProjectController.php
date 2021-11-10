@@ -89,7 +89,7 @@ class ProjectController extends Controller
     public function show(Project $project)
     {
         $interviews = Interview::where('project_id','=',$project->id);
-        $interviews = $interviews->orderBy('id','DESC')->paginate(5);
+        $interviews = $interviews->orderBy('id','DESC')->paginate(10);
         // dd($interviews);
         return view('app.project.show', [
             'titulo' => $project->name,

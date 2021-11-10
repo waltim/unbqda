@@ -11,15 +11,19 @@ class Interview extends Model
     protected $table = 'interviews';
     protected $fillable = ['name, description, project_id'];
 
-
     public function quotes()
     {
-        return $this->hasMany('App\Quote');
+       return $this->hasMany('App\Quote');
     }
 
     public function comments()
     {
         return $this->hasMany('App\Comment');
+    }
+
+    public function coding_levels()
+    {
+        return $this->hasMany('App\CodingLevel');
     }
 
     public function project()

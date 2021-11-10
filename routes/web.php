@@ -32,6 +32,7 @@ Route::get('/code-analise/{interview}', 'InterviewController@analise')->name('in
 Route::get('/observations/{code}', 'InterviewController@observations')->name('interview.observation')->middleware('auth');
 Route::post('/remove-code-quote', 'CodeController@remove_code_quote')->name('code.quote.remove')->middleware('auth');
 Route::post('/comments', 'InterviewController@comment')->name('comment.interview')->middleware('auth');
+Route::post('/levels', 'InterviewController@level')->name('interview.level')->middleware('auth');
 Route::get('/comments/{interview}', 'InterviewController@comments')->name('interview.comment')->middleware('auth');
 
 Route::resource('code', 'CodeController')->middleware('auth');

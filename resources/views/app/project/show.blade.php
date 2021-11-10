@@ -15,6 +15,11 @@
                     class="btn btn-outline-primary">List Projects</button>
                 <button type="button" data-toggle="modal" class="btn btn-outline-primary"
                     data-target=".bd-example-modal-lg">New Interview</button>
+                 @if (auth()->id() == $project->user_id)
+                    <button type="button"
+                    onclick="location.href = '{{ route('project.advanced.stage', ['project' => $project->id]) }}';"
+                    class="btn btn-outline-primary">Codes &#8611; Categories</button>
+                @endif
             </div>
         </div>
     </div>
@@ -42,34 +47,60 @@
                 </thead>
                 <tbody>
                     @foreach ($interviews as $key => $interview)
+                        @php
+                            $codeCount = 0;
+                            $quoteList = \DB::table('quotes')
+                                ->where('interview_id', $interview->id)
+                                ->get();
+                            foreach ($quoteList as $key => $quote) {
+                                $codeList = \DB::table('code_quote')
+                                    ->where('quote_id', $quote->id)
+                                    ->get();
+                                $codeCount = $codeCount + $codeList->count();
+                            }
+                            $process = \DB::table('coding_levels')
+                                ->where('interview_id', $interview->id)
+                                ->latest('created_at')
+                                ->first();
+                            $level = 0;
+                            if ($process != null) {
+                                $level = $process->level;
+                            }
+                        @endphp
                         <tr id="sid{{ $interview->id }}">
                             <td scope="row">{{ $key }}</td>
                             <td>{{ $interview->name }}</td>
                             <td>{{ \Illuminate\Support\Str::limit($interview->description, 50, $end = '...') }}</td>
                             @if (auth()->id() == $interview->project->user_id)
-                                <td class="btn-group" role="group" aria-label="Basic example" style="padding-top: 0px!important">
+                                <td class="btn-group" role="group" aria-label="Basic example"
+                                    style="padding-top: 0px!important">
                                     <button type="button"
                                         onclick="location.href = '{{ route('interview.show', ['interview' => $interview->id]) }}';"
                                         class="btn btn-outline-dark">Open Coding</button>
+                                    @if ($codeCount > 1 && $level > 0)
                                         <button type="button"
-                                        onclick="location.href = '{{ route('interview.analise', ['interview' => $interview->id]) }}';"
-                                        class="btn btn-outline-primary">Code Analise</button>
-                                        <button type="button"
-                                        onclick="location.href = '{{ route('project.advanced.stage', ['project' => $interview->project_id]) }}';"
-                                        class="btn btn-outline-success">Codes &#8611; Categories</button>
+                                            onclick="location.href = '{{ route('interview.analise', ['interview' => $interview->id]) }}';"
+                                            class="btn btn-outline-primary">Code Analise</button>
+                                    @else
+                                        <button type="button" onclick="setInterviewInput({{ $interview->id }})" data-toggle="modal" class="btn btn-outline-primary"
+                                        data-target=".apt-analysis">suitable for analysis</button>
+                                    @endif
                                 </td>
                                 <td><a href="javascript:void(0)" id="editInterview" class="btn btn-info"
                                         onclick="editInterview({{ $interview->id }})">Edit Interview</a></td>
                                 <td><a href="javascript:void(0)" onclick="deleteInterview({{ $interview->id }})"
                                         class="btn btn-danger">Delete</a></td>
                             @else
-                                <td class="btn-group" role="group" aria-label="Basic example" style="padding-top: 0px!important">
+                                <td class="btn-group" role="group" aria-label="Basic example"
+                                    style="padding-top: 0px!important">
                                     <button type="button"
                                         onclick="location.href = '{{ route('interview.show', ['interview' => $interview->id]) }}';"
                                         class="btn btn-outline-dark">Open Coding</button>
-                                        <button type="button"
+                                    @if ($codeCount > 1 && $level > 0)
+                                    <button type="button"
                                         onclick="location.href = '{{ route('interview.analise', ['interview' => $interview->id]) }}';"
                                         class="btn btn-outline-success">Code Analise</button>
+                                    @endif
                                 </td>
                                 <td></td>
                                 <td></td>
@@ -117,6 +148,39 @@
     </div>
 
 
+    <div class="modal fade apt-analysis" id="apt-analysis" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="code-name">Coding Level</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="analiseForm">
+                        @csrf
+                        <div id="code-id" class="form-group">
+                            <p id="quote-text" style="color: black;"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleFormControlSelect1">Coding Status</label>
+                            <select name="scale" class="form-control" id="code_scale" required>
+                                <option value=""> Select one option </option>
+                                <option value="1">Open Coding</option>
+                                <option value="2">Axial Coding</option>
+                                <option value="3">Selective Coding</option>
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Change level</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div id="editInterviewForm" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog"
         aria-labelledby="myLargeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -130,8 +194,8 @@
                         @method('PUT')
                         <div class="form-group">
                             <label style="font-size: 18px;" for="exampleFormControlInput1">Interview name</label>
-                            <input type="text" name="name" value="{{ old('name') ?? '' }}" class="form-control" id="name"
-                                placeholder="The name of your project">
+                            <input type="text" name="name" value="{{ old('name') ?? '' }}" class="form-control"
+                                id="name" placeholder="The name of your project">
                         </div>
                         <div class="form-group">
                             <label style="font-size: 18px;" for="exampleFormControlTextarea1">Text of the interview</label>
@@ -166,6 +230,36 @@
                 })
             }
         }
+
+        function setInterviewInput(id){
+            $("#interview_id").remove();
+            $("#analiseForm").append("<input type='hidden' id='interview_id' name='interview_id' value=" + id + " >");
+        }
+
+        $('#analiseForm').submit(function(e) {
+            e.preventDefault();
+            var scale = $("select[name=scale]").val();
+            var _token = $("input[name=_token]").val();
+            var interview_id = $("input[name=interview_id]").val();
+            console.log(scale, interview_id);
+            $.ajax({
+                url: "{{ route('interview.level') }}",
+                type: "POST",
+                data: {
+                    level: scale,
+                    _token: _token,
+                    interview_id: interview_id
+                },
+                success: function(response) {
+                    $("#apt-analysis").modal("toggle");
+                    $('#analiseForm')[0].reset();
+                    $('#interviews-table').load(document.URL + ' #interviews-table');
+                },
+                error: function(data) {
+                    console.log(data);
+                }
+            })
+        })
 
         function editInterview(id) {
             var key = parseInt(id);
@@ -250,7 +344,6 @@
                 }
             })
         })
-
     </script>
 
 @endsection
