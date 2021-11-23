@@ -83,7 +83,7 @@
                         <label class="unselectable" for="exampleFormControlTextarea1">Quotes</label>
                         <br>
                         @foreach ($code->quotes as $quote)
-                            @if ($quote->interview_id == $interview)
+                            @if ($quote->interview_id == $interview->id)
                                 @if ($loop->last)
                                     {{ $quote->description }}
                                 @else

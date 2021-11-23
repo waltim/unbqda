@@ -8,6 +8,7 @@ use App\Interview;
 use App\Quote;
 use App\Comment;
 use App\CodingLevel;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -60,7 +61,7 @@ class InterviewController extends Controller
         ]);
     }
 
-    public function observations(Code $code)
+    public function observations(Code $code, Interview $interview)
     {
         $observations = Code::join('observations', 'observations.code_id', 'codes.id')
             ->join('users', 'observations.user_id', 'users.id')
@@ -72,7 +73,7 @@ class InterviewController extends Controller
 
         return view('app.interview.observation', [
             'titulo' => 'Observations',
-            'interview' => $code->quotes()->first()->interview_id,
+            'interview' => $interview,
             'observations' => $observations,
             'code' => $code
         ]);
@@ -143,6 +144,34 @@ class InterviewController extends Controller
         })
         ->orderBy('codes.id', 'DESC')
         ->paginate(10);
+
+
+        $codesCount = Code::whereHas('quotes', function ($q) use ($interview) {
+            $q->where('quotes.interview_id', '=', $interview->id);
+        })->get();
+
+        $unities = $codesCount->count();
+        $usersAgreeCount = array();
+
+        $i = 0;
+        foreach($codesCount as $cc){
+            $agreements = Agreement::where('agreements.code_id', $cc->id)->get();
+            foreach($agreements as $aa){
+                $usersAgreeCount[$i] = $aa->user_id;
+                $i++;
+            }
+        }
+        $ratersCount = array_unique($usersAgreeCount);
+        $ratersCount = sizeof($ratersCount);
+
+
+        $matrixParent = array();
+
+        for ($y=0; $y < $unities; $y++) {
+            $matrixChild = array(0,0,0,0,0);
+            $matrixParent[] = $matrixChild;
+        }
+        // dd(json_encode($matrixParent));
 
         return view('app.interview.analise', [
             'titulo' => $interview->name,

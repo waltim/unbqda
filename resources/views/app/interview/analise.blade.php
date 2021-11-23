@@ -74,7 +74,7 @@
                                     ->where('agreements.code_id', '=', $code->id)
                                     ->where('agreements.deleted_at', null)
                                     ->get();
-                                
+
                                 $observations = \DB::table('observations')
                                     ->where('observations.code_id', '=', $code->id)
                                     ->where('observations.deleted_at', null)
@@ -118,7 +118,7 @@
                             @endif
                             @if ($observations->count() > 0)
                                 <button type="button"
-                                    onclick="location.href = '{{ route('interview.observation', ['code' => $code->id]) }}'"
+                                    onclick="location.href = '{{ route('interview.observation', ['code' => $code->id, 'interview' => $interview->id ]) }}'"
                                     class="btn btn-outline-info">Show observations</button>
                             @endif
                         </td>
