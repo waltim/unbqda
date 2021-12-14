@@ -502,7 +502,7 @@
             setTimeout(function(){
                 $('.result-selected').addClass('test');
                 $('.test').addClass('active-result').removeClass('result-selected').removeClass('test');
-            }, 9000);
+            }, 5000);
         }
 
         $('#codeForm').submit(function(e) {
