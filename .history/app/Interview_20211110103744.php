@@ -21,11 +21,6 @@ class Interview extends Model
         return $this->hasMany('App\Comment');
     }
 
-    public function observations()
-    {
-        return $this->hasMany('App\Observation');
-    }
-
     public function coding_levels()
     {
         return $this->hasMany('App\CodingLevel');

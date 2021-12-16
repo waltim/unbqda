@@ -9,7 +9,7 @@ class Observation extends Model
 {
     use SoftDeletes;
     protected $table = "observations";
-    protected $fillable = ['interview_id, description, user_id'];
+    protected $fillable = ['agreement_id, description, user_id'];
 
     public function code()
     {
@@ -19,11 +19,6 @@ class Observation extends Model
     public function user()
     {
         return $this->belongsTo('App\User');
-    }
-
-    public function interview()
-    {
-        return $this->belongsTo('App\Interview');
     }
 
 }

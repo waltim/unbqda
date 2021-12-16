@@ -233,7 +233,6 @@ class CodeController extends Controller
             $observation = new Observation();
             $observation->user_id = auth()->id();
             $observation->code_id = $request->get('code_id');
-            $observation->interview_id = $request->get('interview_id');
             $observation->description = $request->get('observation');
             $observation->save();
             Observation::reguard();

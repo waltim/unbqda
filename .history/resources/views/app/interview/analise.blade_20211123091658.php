@@ -190,7 +190,6 @@
                                 placeholder="This code needs small changes to improve your understanding..."
                                 id="observation-text" rows="3"></textarea>
                         </div>
-                        <input type="hidden" name="interview_id" id="interview_id" value="{{ $interview->id }}">
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary">Save analise</button>
@@ -300,7 +299,6 @@
             var scale = $("select[name=scale]").val();
             var observation = $("textarea[name=observation]").val();
             var _token = $("input[name=_token]").val();
-            var interview_id = $("input[name=interview_id]").val();
             var user_id = {{ auth()->id() }};
             console.log(observation, code_id, scale, user_id);
             $.ajax({
@@ -311,8 +309,7 @@
                     scale: scale,
                     _token: _token,
                     user_id: user_id,
-                    observation: observation,
-                    interview_id:interview_id
+                    observation: observation
                 },
                 success: function(response) {
                     $("#exampleModal").modal("toggle");

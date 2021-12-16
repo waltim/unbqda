@@ -166,7 +166,7 @@
                     _token: _token,
                     user_id: user_id,
                     observation: observation,
-                    interview_id: interview_id
+                    interivew_id: interivew_id
                 },
                 success: function(response) {
                     $("#obsModal").modal("toggle");

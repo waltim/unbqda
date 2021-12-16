@@ -190,7 +190,6 @@
                                 placeholder="This code needs small changes to improve your understanding..."
                                 id="observation-text" rows="3"></textarea>
                         </div>
-                        <input type="hidden" name="interview_id" id="interview_id" value="{{ $interview->id }}">
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary">Save analise</button>

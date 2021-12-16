@@ -116,7 +116,7 @@
                 <div class="modal-body">
                     <form id="obsForm">
                         @csrf
-                        <input type="hidden" name="interview_id" id="interview_id" value="{{ $interview->id }}">
+                        <input type="hidden" name="interview_id" value="{{ $interview }}">
                         <div id="code-id" class="form-group">
                             <p id="quote-text" style="color: black;"></p>
                         </div>
@@ -157,7 +157,7 @@
             var _token = $("input[name=_token]").val();
             var interview_id = $("input[name=interview_id]").val();
             var user_id = {{ auth()->id() }};
-            console.log(interview_id,observation, code_id, _token, user_id);
+            console.log(observation, code_id, _token, user_id);
             $.ajax({
                 url: "{{ route('code.observation') }}",
                 type: "POST",
@@ -165,8 +165,7 @@
                     code_id: code_id,
                     _token: _token,
                     user_id: user_id,
-                    observation: observation,
-                    interview_id: interview_id
+                    observation: observation
                 },
                 success: function(response) {
                     $("#obsModal").modal("toggle");
