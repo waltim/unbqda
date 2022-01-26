@@ -42,6 +42,12 @@ Route::post('/analise', 'CodeController@analise')->name('code.analise')->middlew
 Route::post('/observation-store', 'CodeController@save_observation')->name('code.observation')->middleware('auth');
 Route::post('/code-store-selected', 'CodeController@store_code_selected')->name('code.store.selected')->middleware('auth');
 Route::get('/options-code/{interview}', 'CodeController@options_code')->name('options.code')->middleware('auth');
+
+Route::get('/theory_codes', 'ProjectController@theory_codes')->name('theory.codes')->middleware('auth');
+Route::get('/theory_categories', 'ProjectController@theory_categories')->name('theory.categories')->middleware('auth');
+Route::get('/theory_codeCategories', 'ProjectController@theory_codeCategories')->name('theory.codeCategories')->middleware('auth');
+
+
 Route::delete('/analise-delete/{agreement}', 'CodeController@analise_delete')->name('code.analise.delete')->middleware('auth');
 Route::put('/code', 'CodeController@update')->name('code.update')->middleware('auth');
 

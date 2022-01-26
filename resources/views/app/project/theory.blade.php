@@ -16,70 +16,123 @@
 </body>
 <script type="text/javascript" src="{{ asset('js/vis.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/vis-network.min.js') }}"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 
 
 <script>
-    var nodes = new vis.DataSet([
-        {
-            id: 1,
-            label: "A",
-            color: "#D2E5FF"
-        },
-        {
-            id: 10002,
-            label: "B",
-            color: '#F0F0F0'
-        },
-        {
-            id: 3,
-            label: "C",
-            group: "nodes"
-        },
-        {
-            id: 4,
-            label: "D",
-            group: "nodes"
-        },
-        {
-            id: 5,
-            label: "E",
-            group: "nodes"
-        }
-    ]);
 
-    var edges = new vis.DataSet([{
-            from: 1,
-            to: 10002
-        },
-        {
-            from: 3,
-            to: 10002
-        },
-        {
-            from: 5,
-            to: 10002
-        },
-        {
-            from: 4,
-            to: 10002
-        }
-    ]);
+    var codesData = [];
+    var codeCategoriesData = [];
 
-    var container = document.getElementById("grafo");
+    async function plotTheory() {
 
-    var dates = {
+        var codesGet = await $.getJSON( "/theory_codes", function() {
+        })
+        .done(function(codes) {
+            $.each(JSON.parse(codes), function (key, item) {
+                //console.log(item);
+
+                let code = {};
+                code['id'] = item.id;
+                code['label'] = item.description;
+                //code['color'] = item.color;
+                code['group'] = "nodes";
+
+                codesData.push(code);
+            });
+            // console.log( "second success" );
+            console.log(codesData);
+        })
+        .fail(function() {
+            console.log( "error" );
+        });
+
+        var categoryGet = await $.getJSON( "/theory_categories", function() {
+        })
+        .done(function(categories) {
+            $.each(JSON.parse(categories), function (key, item) {
+                //console.log(item);
+
+                let category = {};
+                category['id'] = item.id + 1000;
+                category['label'] = item.description;
+                //category['color'] = item.color;
+                if(item.category_id != null){
+                    category['group'] = "categories";
+                }else{
+                    category['group'] = "subcategories";
+                }
+                codesData.push(category);
+            });
+            // console.log( "second success" );
+            console.log(codesData);
+        })
+        .fail(function() {
+            console.log( "error" );
+        });
+
+
+        var codeCategoryGet = await $.getJSON( "/theory_codeCategories", function() {
+        })
+        .done(function(codecategories) {
+            $.each(JSON.parse(codecategories), function (key, item) {
+                //console.log(item);
+
+                let codecat = {};
+                codecat['from'] = item.code_id;
+                codecat['to'] = item.category_id + 1000;
+
+                codeCategoriesData.push(codecat);
+            });
+            // console.log( "second success" );
+            console.log(codeCategoriesData);
+        })
+        .fail(function() {
+            console.log( "error" );
+        });
+
+        var subCategoryGet = await $.getJSON( "/theory_categories", function() {
+        })
+        .done(function(subcat) {
+            $.each(JSON.parse(subcat), function (key, item) {
+                //console.log(item);
+                if(item.category_id != null){
+                let subcategory = {};
+                subcategory['from'] = item.id + 1000;
+                subcategory['to'] = item.category_id + 1000;
+                codeCategoriesData.push(subcategory);
+                }
+            });
+            // console.log( "second success" );
+            console.log(codeCategoriesData);
+        })
+        .fail(function() {
+            console.log( "error" );
+        });
+
+        var nodes = new vis.DataSet(codesData);
+        var edges = new vis.DataSet(codeCategoriesData);
+
+        var container = document.getElementById("grafo");
+
+        var dates = {
         nodes: nodes,
         edges: edges
-    };
+        };
 
-    var options = {
+        var options = {
         groups: {
-            categories: {color:{background:'#D2E5FF'}, borderWidth:3},
-            nodes: {color:{background:'blue'}, borderWidth:3}
+            categories: {color:{background:'#DCDCDC'}, borderWidth:3},
+            nodes: {color:{background:'#add8e6'}, borderWidth:3},
+            subcategories: {color:{background:'#90ee90'}, borderWidth:3},
         }
 
+        }
+        var graph = new vis.Network(container, dates, options);
     }
-    var graph = new vis.Network(container, dates, options);
+
+    plotTheory();
 </script>
 
 </html>

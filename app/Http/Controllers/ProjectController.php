@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Category;
+use App\CodeCategory;
 use App\Code;
 use App\Interview;
 use App\Project;
@@ -34,6 +35,24 @@ class ProjectController extends Controller
 
     public function theory(){
         return view('app.project.theory');
+    }
+
+    public function theory_codes()
+    {
+        $codes = Code::all();
+        return response()->json(json_encode($codes));
+    }
+
+    public function theory_categories()
+    {
+        $categories = Category::all();
+        return response()->json(json_encode($categories));
+    }
+
+    public function theory_codeCategories()
+    {
+        $codeCategories = CodeCategory::all();
+        return response()->json(json_encode($codeCategories));
     }
 
 

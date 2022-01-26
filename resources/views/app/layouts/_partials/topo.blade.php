@@ -18,7 +18,7 @@
                 <a class="nav-link"  href="{{ route('code.index') }}">Codes &#8611; Categories</a>
             </li> --}}
             <li class="nav-item">
-                <a class="nav-link" href="#">Theory Network</a>
+                <a class="nav-link" href="{{ route('project.theory') }}">Theory Network</a>
             </li>
             <li class="nav-item dropdown">
                 @guest
